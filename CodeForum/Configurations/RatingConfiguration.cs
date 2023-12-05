@@ -10,7 +10,8 @@ public class RatingConfiguration : IEntityTypeConfiguration<Rating>
     {
         builder.HasOne(rating => rating.User)
             .WithMany(user => user.Ratings)
-            .HasForeignKey(rating => rating.UserId);
+            .HasForeignKey(rating => rating.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(rating => rating.Topic)
             .WithMany(topic => topic.Ratings)

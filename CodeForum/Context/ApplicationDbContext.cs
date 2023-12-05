@@ -33,5 +33,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.ApplyConfiguration(new FavoriteConfiguration());
         modelBuilder.ApplyConfiguration(new ReportConfiguration());
         modelBuilder.ApplyConfiguration(new TopicTagConfiguration());
+        modelBuilder.ApplyConfiguration(new LikeDislikeConfiguration());
     }
 }

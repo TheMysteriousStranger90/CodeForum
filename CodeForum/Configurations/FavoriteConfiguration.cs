@@ -10,7 +10,8 @@ public class FavoriteConfiguration : IEntityTypeConfiguration<Favorite>
     {
         builder.HasOne(favorite => favorite.User)
             .WithMany(user => user.Favorites)
-            .HasForeignKey(favorite => favorite.UserId);
+            .HasForeignKey(favorite => favorite.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(favorite => favorite.Topic)
             .WithMany(topic => topic.Favorites)

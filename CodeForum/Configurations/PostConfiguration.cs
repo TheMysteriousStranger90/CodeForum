@@ -10,7 +10,8 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
     {
         builder.HasOne(post => post.User)
             .WithMany(user => user.Posts)
-            .HasForeignKey(post => post.UserId);
+            .HasForeignKey(post => post.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(post => post.Topic)
             .WithMany(topic => topic.Posts)
