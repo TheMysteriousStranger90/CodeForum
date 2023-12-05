@@ -26,39 +26,46 @@ public static class SeedDataInitializer
         var roles = new List<string> { "Administrator", "User" };
         foreach (var roleName in roles)
         {
-            if (await roleManager.FindByNameAsync(roleName) == null)
+            if (await roleManager.FindByIdAsync(roleName) == null)
             {
-                await roleManager.CreateAsync(new IdentityRole(roleName));
+                var result = await roleManager.CreateAsync(new IdentityRole(roleName));
+                if (!result.Succeeded)
+                {
+                    throw new Exception($"Failed to create role: {result.Errors.First().Description}");
+                }
             }
         }
     }
 
     private static async Task SeedUsersAsync(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
     {
-        string adminEmail = "lev.myshkin@outlook.com";
-        string password = "Myshkin0101";
+        var admin = CreateAdminUser();
+        await CreateUser(admin, "Myshkin0101", "Administrator", userManager, context);
 
-        if (await userManager.FindByNameAsync(adminEmail) == null)
+        var users = CreateUsers();
+        foreach (var user in users)
         {
-            ApplicationUser admin = new ApplicationUser
-            {
-                FirstName = "Lev",
-                LastName = "Myshkin",
-                Email = adminEmail,
-                UserName = adminEmail,
-                DateOfBirth = new DateTime(1980, 1, 1),
-                Bio = "Admin user",
-                ProfilePicture = "default.jpg"
-            };
-
-            IdentityResult result = await userManager.CreateAsync(admin, password);
-            if (result.Succeeded)
-            {
-                await userManager.AddToRoleAsync(admin, "Administrator");
-            }
+            await CreateUser(user, "Password123", "User", userManager, context);
         }
+    }
 
-        var users = new List<ApplicationUser>
+    private static ApplicationUser CreateAdminUser()
+    {
+        return new ApplicationUser
+        {
+            FirstName = "Lev",
+            LastName = "Myshkin",
+            Email = "lev.myshkin@outlook.com",
+            UserName = "lev.myshkin@outlook.com",
+            DateOfBirth = new DateTime(1980, 1, 1),
+            Bio = "Admin user",
+            ProfilePicture = "default.jpg"
+        };
+    }
+
+    private static List<ApplicationUser> CreateUsers()
+    {
+        return new List<ApplicationUser>
         {
             new ApplicationUser
             {
@@ -71,21 +78,22 @@ public static class SeedDataInitializer
                 DateOfBirth = new DateTime(1990, 1, 1), Bio = "User 2", ProfilePicture = "default.jpg"
             },
         };
+    }
 
-        foreach (var user in users)
+    private static async Task CreateUser(ApplicationUser user, string password, string roleName,
+        UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+    {
+        if (await userManager.FindByNameAsync(user.Email) == null)
         {
-            if (await userManager.FindByNameAsync(user.Email) == null)
+            IdentityResult result = await userManager.CreateAsync(user, password);
+            if (result.Succeeded)
             {
-                IdentityResult result = await userManager.CreateAsync(user, "Password123");
-                if (result.Succeeded)
-                {
-                    await userManager.AddToRoleAsync(user, "User");
-                    await SeedTopicsAndPostsForUser(user, context);
-                }
-                else
-                {
-                    throw new Exception($"Failed to create user: {result.Errors.First().Description}");
-                }
+                await userManager.AddToRoleAsync(user, roleName);
+                await SeedTopicsAndPostsForUser(user, context);
+            }
+            else
+            {
+                throw new Exception($"Failed to create user: {result.Errors.First().Description}");
             }
         }
     }
@@ -101,14 +109,30 @@ public static class SeedDataInitializer
             await context.SaveChangesAsync();
         }
 
-        var topic = new Topic
+        var topic = CreateTopicForUser(user, category);
+
+        await context.Topics.AddAsync(topic);
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to save topic and posts: {ex.Message}");
+            throw;
+        }
+    }
+
+    private static Topic CreateTopicForUser(ApplicationUser user, Category category)
+    {
+        return new Topic
         {
             Title = "C# New Features",
             Content = "Discussion about C# programming",
             CreatedAt = DateTime.Now,
             UserId = user.Id,
             CategoryId = category.Id,
-            Image = null,
+            Image = "default.jpg", // Ensure 'Image' is never NULL
             Posts = new List<Post>
             {
                 new Post
@@ -127,16 +151,5 @@ public static class SeedDataInitializer
                 }
             }
         };
-
-        await context.Topics.AddAsync(topic);
-        try
-        {
-            await context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Failed to save topic and posts: {ex.Message}");
-            throw;
-        }
     }
 }
