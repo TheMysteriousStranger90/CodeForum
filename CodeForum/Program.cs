@@ -14,8 +14,6 @@ builder.Services.AddApplicationServices(builder.Configuration);
 var app = builder.Build();
 
 
-
-
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -24,8 +22,11 @@ using (var scope = app.Services.CreateScope())
         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
         var rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         var dbContext = services.GetRequiredService<ApplicationDbContext>();
+        var logger = services.GetRequiredService<ILogger<Program>>();
         
+        logger.LogInformation("Starting data initialization");
         await SeedDataInitializer.InitializeAsync(dbContext, userManager, rolesManager);
+        logger.LogInformation("Data initialization completed");
     }
     catch (Exception ex)
     {

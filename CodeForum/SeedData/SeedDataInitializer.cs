@@ -1,6 +1,7 @@
 ﻿using CodeForum.Context;
 using CodeForum.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace CodeForum.SeedData;
 
@@ -79,21 +80,26 @@ public static class SeedDataInitializer
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(user, "User");
+                    await SeedTopicsAndPostsForUser(user, context);
+                }
+                else
+                {
+                    throw new Exception($"Failed to create user: {result.Errors.First().Description}");
                 }
             }
-        }
-
-        foreach (var user in users)
-        {
-            await SeedTopicsAndPostsForUser(user, context);
         }
     }
 
     private static async Task SeedTopicsAndPostsForUser(ApplicationUser user, ApplicationDbContext context)
     {
-        var category = new Category { Name = "C# Programming Language" };
-        context.Categories.Add(category);
-        await context.SaveChangesAsync();
+        var categoryName = "C# Programming Language";
+        var category = await context.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
+        if (category == null)
+        {
+            category = new Category { Name = categoryName };
+            context.Categories.Add(category);
+            await context.SaveChangesAsync();
+        }
 
         var topic = new Topic
         {
@@ -102,6 +108,7 @@ public static class SeedDataInitializer
             CreatedAt = DateTime.Now,
             UserId = user.Id,
             CategoryId = category.Id,
+            Image = null,
             Posts = new List<Post>
             {
                 new Post
@@ -122,6 +129,14 @@ public static class SeedDataInitializer
         };
 
         await context.Topics.AddAsync(topic);
-        await context.SaveChangesAsync();
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to save topic and posts: {ex.Message}");
+            throw;
+        }
     }
 }
