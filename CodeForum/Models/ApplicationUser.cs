@@ -1,6 +1,19 @@
-﻿namespace CodeForum.Models;
+﻿using Microsoft.AspNetCore.Identity;
 
-public class ApplicationUser
+namespace CodeForum.Models;
+
+public class ApplicationUser : IdentityUser
 {
-    
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public DateTime DateOfBirth { get; set; }
+    public string Bio { get; set; }
+    public string ProfilePicture { get; set; }
+    public ICollection<Topic> Topics { get; set; }
+    public ICollection<Post> Posts { get; set; }
+    public ICollection<Rating> Ratings { get; set; }
+    public ICollection<LikeDislike> LikesDislikes { get; set; }
+    public ICollection<Favorite> Favorites { get; set; }
+    public ICollection<Notification> Notifications { get; set; }
+    public ICollection<Report> Reports { get; set; }
 }
