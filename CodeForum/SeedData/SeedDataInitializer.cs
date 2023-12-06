@@ -132,7 +132,7 @@ public static class SeedDataInitializer
             CreatedAt = DateTime.Now,
             UserId = user.Id,
             CategoryId = category.Id,
-            Image = "default.jpg", // Ensure 'Image' is never NULL
+            Image = "default.jpg",
             Posts = new List<Post>
             {
                 new Post
