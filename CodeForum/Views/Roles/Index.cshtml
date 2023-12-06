@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityRole>
+
+<h2>List</h2>
+<div class="col-md-6 offset-md-3">
+    <div class="card card-body bg-light">
+        <table class="table">
+            @foreach (var role in Model)
+            {
+                <tr>
+                    <td>@role.Name</td>
+                    <td>
+                        <form asp-action="Delete" asp-route-id="@role.Id" method="post">
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </table>
+ <div>
+            <a asp-action="Create">
+                <button type="submit" class="btn btn-sm btn-primary">
+                    Add role
+                </button>
+            </a>
+        
+            <a asp-action="UserList" style="margin-left: 10px;">
+                <button type="submit" class="btn btn-sm btn-primary">
+                    List
+                </button>
+            </a>
+        </div>
+    </div>
+</div>

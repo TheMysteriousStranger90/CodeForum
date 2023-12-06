@@ -1,0 +1,35 @@
+﻿@model CodeForum.Models.ViewModels.LoginViewModel
+
+<div class="col-md-6 offset-md-3">
+    <div class="card card-body bg-light">
+        <form method="post" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl">
+            <div asp-validation-summary="ModelOnly"></div>
+            <div class="form-group">
+                <label asp-for="Email"></label><br/>
+                <input asp-for="Email" autocomplete="email"/> <!-- Add autocomplete attribute -->
+                <span asp-validation-for="Email"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password"></label><br/>
+                <input asp-for="Password" autocomplete="current-password"/> <!-- Add autocomplete attribute -->
+                <span asp-validation-for="Password"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RememberMe"></label><br/>
+                <input asp-for="RememberMe"/>
+            </div>
+            <div class="form-group">
+                <div class=" col-1 my-3">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <a asp-controller="Account" asp-action="ForgotPassword">Forgot Password?</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

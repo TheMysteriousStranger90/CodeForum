@@ -1,0 +1,44 @@
+﻿@model CodeForum.Models.ViewModels.RegisterViewModel
+
+<div class="col-md-6 offset-md-3">
+    <div class="card card-body bg-light">
+        <form method="post" asp-controller="Account" asp-action="Register">
+            <div asp-validation-summary="ModelOnly"></div>
+            <div>
+                <label asp-for="FirstName"></label><br/>
+                <input asp-for="FirstName"/>
+                <span asp-validation-for="FirstName"></span>
+            </div>
+            <div>
+                <label asp-for="LastName"></label><br/>
+                <input asp-for="LastName"/>
+                <span asp-validation-for="LastName"></span>
+            </div>
+            <div>
+                <label asp-for="DateOfBirth"></label><br/>
+                <input asp-for="DateOfBirth"/>
+                <span asp-validation-for="DateOfBirth"></span>
+            </div>
+            <div>
+                <label asp-for="Email"></label><br/>
+                <input asp-for="Email"/>
+                <span asp-validation-for="Email"></span>
+            </div>
+            <div>
+                <label asp-for="Password"></label><br/>
+                <input asp-for="Password"/>
+                <span asp-validation-for="Password"></span>
+            </div>
+            <div>
+                <label asp-for="PasswordConfirm"></label><br/>
+                <input asp-for="PasswordConfirm"/>
+                <span asp-validation-for="PasswordConfirm"></span>
+            </div>
+            <div class="form-group">
+            </div>
+            <div class="form-group register-button">
+                <input type="submit" value="Register" class="btn btn-primary"/>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,19 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model CodeForum.Models.ViewModels.ChangeRoleViewModel
+
+<h2>Changing roles for a user @Model.UserEmail</h2>
+ <div class="col-md-6 offset-md-3">
+     <div class="card card-body bg-light">
+     <form asp-action="Edit" method="post">
+         <input type="hidden" name="userId" value="@Model.UserId" />
+         <div class="form-group">
+             @foreach (IdentityRole role in Model.AllRoles)
+             {
+                 <input type="checkbox" name="roles" value="@role.Name"
+                        @(Model.UserRoles.Contains(role.Name) ? "checked=\"checked\"" : "") />@role.Name <br />
+             }
+         </div>
+         <button type="submit" class="btn btn-primary">Save</button>
+     </form>
+     </div>
+ </div>

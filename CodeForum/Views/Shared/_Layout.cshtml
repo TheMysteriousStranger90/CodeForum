@@ -26,6 +26,40 @@
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </li>
                 </ul>
+                
+                
+                
+                
+                
+                
+                                <div class="flex2 text-end d-none d-md-block">
+                                    <ul class="navbar-nav flex-grow-1">
+                                        @if (User.Identity.IsAuthenticated)
+                                        {
+                                            @if (User.IsInRole("Administrator"))
+                                            {
+                                                <li class="nav-item">
+                                                    <a class="nav-link text-dark" asp-area="" asp-controller="Roles" asp-action="Index">Roles</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    
+                                                </li>
+                                            }
+                                            <li class="nav-item">
+                                                <a class="nav-link" asp-controller="Account" asp-action="Logout">Logout</a>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="nav-item">
+                                                <a class="nav-link" asp-controller="Account" asp-action="Login">Sign In</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" asp-controller="Account" asp-action="Register">Sign Up</a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
             </div>
         </div>
     </nav>
@@ -41,6 +75,10 @@
         &copy; 2023 - CodeForum - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
     </div>
 </footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
+
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>

@@ -1,0 +1,18 @@
+﻿@model IEnumerable<ApplicationUser>
+
+<h2>List</h2>
+<div class="col-md-6 offset-md-3">
+    <div class="card card-body bg-light">
+    <table class="table">
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>
+                    <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-userid="@user.Id">Access rights</a>
+                </td>
+            </tr>
+        }
+    </table>
+    </div>
+</div>

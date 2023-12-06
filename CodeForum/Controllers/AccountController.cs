@@ -45,24 +45,33 @@ public class AccountController : Controller
                 LastName = model.LastName,
                 DateOfBirth = model.DateOfBirth,
                 Email = model.Email,
-                UserName = model.Email
+                UserName = model.Email,
+                Bio = "",
+                ProfilePicture = ""
             };
 
-            var result = await _userManager.CreateAsync(user, model.Password);
-
-            if (result.Succeeded)
+            try
             {
-                await _userManager.AddToRoleAsync(user, "User");
+                var result = await _userManager.CreateAsync(user, model.Password);
 
-                await _signInManager.SignInAsync(user, false);
-                return RedirectToAction("Index", "Home");
-            }
-            else
-            {
-                foreach (var error in result.Errors)
+                if (result.Succeeded)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    await _userManager.AddToRoleAsync(user, "User");
+
+                    await _signInManager.SignInAsync(user, false);
+                    return RedirectToAction("Index", "Home");
                 }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "An error occurred during registration. Please try again later.");
             }
         }
 
@@ -76,30 +85,39 @@ public class AccountController : Controller
     }
 
     [HttpPost]
+    [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
-        if (ModelState.IsValid)
+        try
         {
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
-
-            if (result.Succeeded)
+            if (ModelState.IsValid)
             {
-                if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+                var result =
+                    await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+
+                if (result.Succeeded)
                 {
-                    return Redirect(model.ReturnUrl);
+                    if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+                    {
+                        return Redirect(model.ReturnUrl);
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
                 else
                 {
-                    return RedirectToAction("Index", "Home");
+                    ModelState.AddModelError("", "Incorrect username or password!");
                 }
             }
-            else
-            {
-                ModelState.AddModelError("", "Incorrect username or password!");
-            }
-        }
 
-        return View(model);
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            return View("Error");
+        }
     }
 
     [HttpGet]
@@ -155,5 +173,57 @@ public class AccountController : Controller
         }
 
         return View(model);
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult ResetPassword(string userId, string code)
+    {
+        if (userId == null || code == null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+        else
+        {
+            var model = new ResetPasswordViewModel { Code = code };
+            return View(model);
+        }
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var user = await _userManager.FindByEmailAsync(model.Email);
+        if (user == null)
+        {
+            return RedirectToAction("ResetPasswordConfirmation", "Account");
+        }
+
+        var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+        if (result.Succeeded)
+        {
+            return RedirectToAction("ResetPasswordConfirmation", "Account");
+        }
+
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
+
+        return View();
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult ResetPasswordConfirmation()
+    {
+        return View();
     }
 }
