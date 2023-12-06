@@ -2,6 +2,7 @@
 using CodeForum.Interfaces;
 using CodeForum.Models;
 using CodeForum.Repositories;
+using CodeForum.Services;
 using CodeForum.Validations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
@@ -59,6 +60,8 @@ public static class ApplicationServicesExtensions
         services.AddScoped<IFavoriteRepository, FavoriteRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<ILikeDislikeRepository, LikeDislikeRepository>();
+        
+        services.AddScoped<IFileUploadService, FileUploadService>();
         
         return services;
     }
