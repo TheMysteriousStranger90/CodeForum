@@ -1,5 +1,7 @@
 ﻿using CodeForum.Context;
+using CodeForum.Interfaces;
 using CodeForum.Models;
+using CodeForum.Repositories;
 using CodeForum.Validations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
@@ -35,8 +37,29 @@ public static class ApplicationServicesExtensions
         {
             options.DefaultRequestCulture = new RequestCulture("en-US");
         });
+        
+        services.AddScoped<IGenericRepository<Topic>, TopicRepository>();
+        services.AddScoped<IGenericRepository<Post>, PostRepository>();
+        services.AddScoped<IGenericRepository<Rating>, RatingRepository>();
+        services.AddScoped<IGenericRepository<Report>, ReportRepository>();
+        services.AddScoped<IGenericRepository<Tag>, TagRepository>();
+        services.AddScoped<IGenericRepository<TopicTag>, TopicTagRepository>();
+        services.AddScoped<IGenericRepository<Category>, CategoryRepository>();
+        services.AddScoped<IGenericRepository<Favorite>, FavoriteRepository>();
+        services.AddScoped<IGenericRepository<Notification>, NotificationRepository>();
+        services.AddScoped<IGenericRepository<LikeDislike>, LikeDislikeRepository>();
 
-
+        services.AddScoped<IPostRepository, PostRepository>();
+        services.AddScoped<ITopicRepository, TopicRepository>();
+        services.AddScoped<IRatingRepository, RatingRepository>();
+        services.AddScoped<IReportRepository, ReportRepository>();
+        services.AddScoped<ITagRepository, TagRepository>();
+        services.AddScoped<ITopicTagRepository, TopicTagRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IFavoriteRepository, FavoriteRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<ILikeDislikeRepository, LikeDislikeRepository>();
+        
         return services;
     }
 }
