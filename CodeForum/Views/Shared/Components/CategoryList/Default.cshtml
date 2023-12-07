@@ -13,10 +13,10 @@
             @if (User.IsInRole("Administrator"))
             {
                 <div>
-                    <form asp-action="Edit" asp-route-id="@category.Id" method="post" style="display:inline;">
+                    <form asp-action="Edit" asp-controller="Category" asp-route-id="@category.Id" method="post" style="display:inline;">
                         <button type="submit" class="btn btn-primary ms-2">Edit</button>
                     </form>
-                    <form asp-action="Delete" asp-route-id="@category.Id" method="post" style="display:inline;">
+                    <form asp-action="Delete" asp-controller="Category" asp-route-id="@category.Id" method="post" style="display:inline;">
                         <button type="submit" class="btn btn-danger ms-2">Delete</button>
                     </form>
                 </div>
