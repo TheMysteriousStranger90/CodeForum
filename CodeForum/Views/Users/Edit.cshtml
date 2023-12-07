@@ -1,0 +1,39 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model CodeForum.Models.ViewModels.EditUserViewModel
+
+@{
+    ViewBag.Title = "Edit";
+}
+<div class="col-md-6 offset-md-3">
+    <div class="card card-body bg-light">
+        <form asp-action="Edit" asp-controller="Users" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <input type="hidden" asp-for="Id"/>
+            </div>
+            <div class="form-group">
+                <label asp-for="FirstName" class="control-label">FirstName</label>
+                <input type="text" asp-for="FirstName" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName" class="control-label">LastName</label>
+                <input type="text" asp-for="LastName" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label">Email</label>
+                <input type="text" asp-for="Email" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label asp-for="Bio" class="control-label">Bio</label>
+                <input type="text" asp-for="Bio" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label for="ProfilePicture" class="control-label">Profile Picture</label>
+                <input type="file" name="ProfilePicture" id="ProfilePicture" class="form-control"/>
+            </div>
+            <div class="form-group m-2">
+                <input type="submit" value="Save" class="btn btn-primary"/>
+            </div>
+        </form>
+    </div>
+</div>
