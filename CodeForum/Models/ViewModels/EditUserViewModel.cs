@@ -1,4 +1,6 @@
-﻿namespace CodeForum.Models.ViewModels;
+﻿using CodeForum.Validations;
+
+namespace CodeForum.Models.ViewModels;
 
 public class EditUserViewModel
 {
@@ -7,5 +9,8 @@ public class EditUserViewModel
     public string LastName { get; set; }
     public string Email { get; set; }
     public string Bio { get; set; }
-    public string ProfilePicture { get; set; }
+
+    [FileTypeValidation(".jpg", ".jpeg", ".png")]
+    public IFormFile ProfilePicture { get; set; }
+    public string CurrentProfilePicture { get; set; }
 }

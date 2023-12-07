@@ -39,7 +39,7 @@ public class UsersController : Controller
             FirstName = user.FirstName,
             LastName = user.LastName,
             Bio = user.Bio,
-            ProfilePicture = user.ProfilePicture
+            CurrentProfilePicture = user.ProfilePicture
         };
         return View(model);
     }
