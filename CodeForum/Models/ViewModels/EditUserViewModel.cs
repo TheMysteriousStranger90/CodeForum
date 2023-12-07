@@ -1,4 +1,5 @@
 ﻿using CodeForum.Validations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace CodeForum.Models.ViewModels;
 
@@ -12,5 +13,5 @@ public class EditUserViewModel
 
     [FileTypeValidation(".jpg", ".jpeg", ".png")]
     public IFormFile ProfilePicture { get; set; }
-    public string CurrentProfilePicture { get; set; }
+    [BindNever] public string CurrentProfilePicture { get; set; }
 }

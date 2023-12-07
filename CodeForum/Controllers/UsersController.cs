@@ -47,39 +47,42 @@ public class UsersController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(EditUserViewModel model, IFormFile ProfilePicture)
     {
-        if (ModelState.IsValid)
+        ApplicationUser user = await _userManager.FindByIdAsync(model.Id);
+        if (user != null)
         {
-            ApplicationUser user = await _userManager.FindByIdAsync(model.Id);
-            if (user != null)
+            if (ProfilePicture != null)
             {
-                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(ProfilePicture.FileName);
-                string path = Path.Combine(_env.WebRootPath, "images", "profiles");
+                var fileName = Path.GetFileName(ProfilePicture.FileName);
+                var path = Path.Combine(_env.WebRootPath, "images", "profiles");
                 await _fileUploadService.UploadAsync(path, fileName, ProfilePicture);
 
-                user.FirstName = model.FirstName;
-                user.LastName = model.LastName;
-                user.Email = model.Email;
-                user.UserName = model.Email;
-                user.Bio = model.Bio;
-                user.ProfilePicture = Path.Combine(path, fileName);
+                var relativePath = "/images/profiles/" + fileName;
+                model.CurrentProfilePicture = relativePath;
+                user.ProfilePicture = relativePath;
+            }
 
-                var result = await _userManager.UpdateAsync(user);
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
-                }
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.Email = model.Email;
+            user.UserName = model.Email;
+            user.Bio = model.Bio;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Index");
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "User not found");
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
             }
+        }
+        else
+        {
+            ModelState.AddModelError(string.Empty, "User not found");
         }
 
         return View(model);

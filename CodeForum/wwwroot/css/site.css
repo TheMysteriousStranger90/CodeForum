@@ -72,3 +72,25 @@ a:hover {
   border-radius: 50%;
   object-fit: cover;
 }
+
+.navbar {
+  background-color: #258cfb;
+}
+
+.container {
+  max-width: 960px;
+}
+
+.footer {
+  background-color: #f8f9fa;
+  border-top: none;
+}
+
+.footer a {
+  color: #6c757d;
+}
+
+.footer a:hover {
+  color: #5a6268;
+  text-decoration: none;
+}
