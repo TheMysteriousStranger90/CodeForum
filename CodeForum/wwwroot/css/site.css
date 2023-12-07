@@ -94,3 +94,43 @@ a:hover {
   color: #5a6268;
   text-decoration: none;
 }
+
+
+
+
+.my-3 {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  text-align: center;
+}
+
+.display-4 {
+  color: #222;
+  font-weight: bold;
+}
+
+.lead {
+  color: #222;
+  font-size: 1.25rem;
+}
+
+.custom-lead {
+  color: #6c757d;
+  font-size: 1.25rem;
+}
+
+.custom-item {
+  border-color: #007bff;
+}
+
+.list-group {
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+}
+
+.list-group-item {
+  border-color: #007bff;
+  background-color: #f8f9fa;
+}

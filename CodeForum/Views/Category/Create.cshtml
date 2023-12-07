@@ -1,0 +1,20 @@
+﻿@model CodeForum.Models.ViewModels.CategoryAddViewModel
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<div class="col-md-6 offset-md-3">
+    <div class="card card-body bg-light">
+        <form asp-action="Create" asp-controller="Category" method="post">
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Name</label>
+                <textarea asp-for="Name" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group m-2">
+                <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+        </form>
+    </div>
+</div>
