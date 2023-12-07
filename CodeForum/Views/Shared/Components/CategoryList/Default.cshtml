@@ -1,0 +1,31 @@
+﻿@model System.Collections.Generic.IList<CodeForum.Models.Category>
+
+<div class="my-3">
+    <h3 class="display-4">Categories</h3>
+    <p class="lead">number of categories: @Model.Count()</p>
+</div>
+
+<ul class="list-group my-3">
+    @foreach (var category in Model)
+    {
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="@Url.Action("Index", "Topic", new { categoryId = category.Id })">@category.Name</a>
+            @if (User.IsInRole("Administrator"))
+            {
+                <div>
+                    <form asp-action="Edit" asp-route-id="@category.Id" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-primary ms-2">Edit</button>
+                    </form>
+                    <form asp-action="Delete" asp-route-id="@category.Id" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger ms-2">Delete</button>
+                    </form>
+                </div>
+            }
+        </li>
+    }
+</ul>
+
+@if (User.IsInRole("Administrator"))
+{
+    <a class="btn btn-primary" href="@Url.Action("Create", "Category")">Add New Category</a>
+}
