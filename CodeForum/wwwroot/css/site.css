@@ -2,6 +2,9 @@ body {
   background-color: #f8f9fa;
   color: #333;
   font-family: 'Arial', sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .card {
@@ -95,7 +98,9 @@ a:hover {
   text-decoration: none;
 }
 
-
+.sticky-footer {
+  margin-top: auto;
+}
 
 
 .my-3 {

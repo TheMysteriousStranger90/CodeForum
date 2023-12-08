@@ -11,8 +11,10 @@ namespace CodeForum.Controllers;
 [Authorize]
 public class TopicsController : Controller
 {
+    private readonly ICategoryRepository _categoryRepository;
     private readonly ITopicRepository _topicRepository;
     private readonly ITopicTagRepository _topicTagRepository;
+    private readonly ITagRepository _tagRepository;
     private readonly IRatingRepository _ratingRepository;
     private readonly IFavoriteRepository _favoriteRepository;
     private readonly UserManager<ApplicationUser> _userManager;
@@ -20,14 +22,16 @@ public class TopicsController : Controller
     private readonly IWebHostEnvironment _env;
 
     public TopicsController(ITopicRepository topicRepository, ITopicTagRepository topicTagRepository,
-        IRatingRepository ratingRepository, IFavoriteRepository favoriteRepository,
+        IRatingRepository ratingRepository, IFavoriteRepository favoriteRepository, ITagRepository tagRepository, ICategoryRepository categoryRepository,
         UserManager<ApplicationUser> userManager, IFileUploadService fileUploadService,
         IWebHostEnvironment env)
     {
+        _categoryRepository = categoryRepository;
         _topicRepository = topicRepository;
         _topicTagRepository = topicTagRepository;
         _ratingRepository = ratingRepository;
         _favoriteRepository = favoriteRepository;
+        _tagRepository = tagRepository;
         _userManager = userManager;
         _fileUploadService = fileUploadService;
         _env = env;
@@ -37,36 +41,95 @@ public class TopicsController : Controller
     public async Task<IActionResult> Index(int? categoryId)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        IEnumerable<Topic> topics;
         if (categoryId == null)
         {
-            var allTopics = await _topicRepository.ListAllAsync();
-            var favorites = new Dictionary<int, bool>();
-            foreach (var topic in allTopics)
-            {
-                favorites[topic.Id] = await _favoriteRepository.IsFavoriteAsync(topic.Id, userId);
-            }
-
-            ViewData["Favorites"] = favorites;
-            return View(allTopics);
+            topics = await _topicRepository.ListAllAsync();
         }
         else
         {
-            var categoryTopics = await _topicRepository.GetByCategoryIdAsync(categoryId.Value);
-            var favorites = new Dictionary<int, bool>();
-            var ratings = new Dictionary<int, int>();
-            foreach (var topic in categoryTopics)
-            {
-                favorites[topic.Id] = await _favoriteRepository.IsFavoriteAsync(topic.Id, userId);
-                var averageRating = await _ratingRepository.GetAverageRatingByTopicIdAsync(topic.Id);
-                ratings[topic.Id] = averageRating.HasValue ? (int)averageRating.Value : 0;
-            }
-
-            ViewData["Favorites"] = favorites;
-            ViewData["Ratings"] = ratings;
-            return View(categoryTopics);
+            topics = await _topicRepository.GetByCategoryIdAsync(categoryId.Value);
+            ViewBag.CategoryId = categoryId.Value; 
         }
-    }
 
+        var favorites = new Dictionary<int, bool>();
+        var ratings = new Dictionary<int, int>();
+        foreach (var topic in topics)
+        {
+            favorites[topic.Id] = await _favoriteRepository.IsFavoriteAsync(topic.Id, userId);
+            var averageRating = await _ratingRepository.GetAverageRatingByTopicIdAsync(topic.Id);
+            ratings[topic.Id] = averageRating.HasValue ? (int)averageRating.Value : 0;
+        }
+        ViewData["Favorites"] = favorites;
+        ViewData["Ratings"] = ratings;
+        
+        return View(topics);
+    }
+    
+    [HttpGet]
+    public IActionResult Create(int categoryId)
+    {
+        var model = new TopicAddViewModel { CategoryId = categoryId };
+        return View(model);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> Create(TopicAddViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var category = await _categoryRepository.GetByIdAsync(model.CategoryId);
+        if (category == null)
+        {
+            ModelState.AddModelError("", "The selected category does not exist.");
+            return View(model);
+        }
+        
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    
+        var topic = new Topic
+        {
+            Title = model.Title,
+            Content = model.Content,
+            CategoryId = model.CategoryId,
+            UserId = userId,
+            CreatedAt = DateTime.Now
+        };
+    
+        if (model.ImageFile != null)
+        {
+            var fileName = Path.GetFileName(model.ImageFile.FileName);
+            var path = Path.Combine(_env.WebRootPath, "images", "topics");
+            await _fileUploadService.UploadAsync(path, fileName, model.ImageFile);
+
+            var relativePath = "/images/topics/" + fileName;
+            topic.Image = relativePath;
+        }
+    
+        _topicRepository.Add(topic);
+        await _topicRepository.SaveChangesAsync();
+    
+        foreach (var tagName in model.Tags)
+        {
+            var tag = await _tagRepository.GetByNameAsync(tagName);
+            if (tag == null)
+            {
+                tag = new Tag { Name = tagName };
+                _tagRepository.Add(tag);
+                await _tagRepository.SaveChangesAsync();
+            }
+        
+            var topicTag = new TopicTag { TopicId = topic.Id, TagId = tag.Id };
+            _topicTagRepository.Add(topicTag);
+        }
+        await _topicTagRepository.SaveChangesAsync();
+
+        return RedirectToAction("Index", "Category");
+    }
+    
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {

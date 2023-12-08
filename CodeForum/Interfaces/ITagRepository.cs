@@ -5,4 +5,5 @@ namespace CodeForum.Interfaces;
 public interface ITagRepository : IGenericRepository<Tag>
 {
     Task<IEnumerable<Tag>> GetTagsByTopicIdAsync(int topicId);
+    Task<Tag> GetByNameAsync(string name);
 }

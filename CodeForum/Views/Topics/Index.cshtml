@@ -11,29 +11,32 @@
     @foreach (var topic in Model)
     {
         <li class="list-group-item">
-            <div class="d-flex justify-content-between align-items-center">
-                <a href="@Url.Action("Index", "Posts", new { id = topic.Id })">@topic.Title</a>
-                @if (User.IsInRole("Administrator") || User.FindFirstValue(ClaimTypes.NameIdentifier) == topic.UserId)
-                {
-                    <div>
-                        <form asp-action="Edit" asp-route-id="@topic.Id" method="post" style="display:inline;">
-                            <button type="submit" class="btn btn-primary ms-2">Edit</button>
-                        </form>
-                        <form asp-action="Delete" asp-route-id="@topic.Id" method="post" style="display:inline;">
-                            <button type="submit" class="btn btn-danger ms-2">Delete</button>
-                        </form>
-                    </div>
-                }
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <form asp-action="FavoriteTopic" asp-route-id="@topic.Id" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-light ms-2">
-                            <i class="fas fa-heart @(favorites[topic.Id] ? "text-warning" : "")"></i>
-                        </button>
-                    </form>
-                }
-            </div>
             <small class="text-muted">Created at @topic.CreatedAt.ToString("g") by @(topic.User != null ? $"{topic.User.FirstName} {topic.User.LastName}" : "Unknown")</small>
+
+          <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex justify-content-start flex-grow-1">
+                  <a href="@Url.Action("Index", "Posts", new { id = topic.Id })">@topic.Title</a>
+              </div>
+              <div class="d-flex justify-content-end">
+                  @if (User.IsInRole("Administrator") || User.FindFirstValue(ClaimTypes.NameIdentifier) == topic.UserId)
+                  {
+                      <form asp-action="Edit" asp-route-id="@topic.Id" method="post" style="display:inline;">
+                          <button type="submit" class="btn btn-primary ms-2">Edit</button>
+                      </form>
+                      <form asp-action="Delete" asp-route-id="@topic.Id" method="post" style="display:inline;">
+                          <button type="submit" class="btn btn-danger ms-2">Delete</button>
+                      </form>
+                  }
+                  @if (User.Identity.IsAuthenticated)
+                  {
+                      <form asp-action="FavoriteTopic" asp-route-id="@topic.Id" method="post" style="display:inline;">
+                          <button type="submit" class="btn btn-light ms-2">
+                              <i class="fas fa-heart @(favorites[topic.Id] ? "text-warning" : "")"></i>
+                          </button>
+                      </form>
+                  }
+              </div>
+          </div>
 
             @if (User.Identity.IsAuthenticated)
             {
@@ -42,7 +45,7 @@
                     {
                         <form asp-action="RateTopic" asp-route-id="@topic.Id" method="post" style="display:inline;">
                             <input type="hidden" name="Score" value="@i"/>
-                            <button type="submit" class="btn btn-light ms-2">
+                            <button type="submit" class="btn btn-light ms-1">
                                 <i class="fas fa-star @(i <= (ratings.ContainsKey(topic.Id) ? ratings[topic.Id] : 0) ? "text-warning" : "")"></i>
                             </button>
                         </form>
@@ -55,5 +58,5 @@
 
 @if (User.Identity.IsAuthenticated)
 {
-    <a class="btn btn-primary" href="@Url.Action("Create", "Topics")">Add New Topic</a>
+    <a asp-action="Create" asp-controller="Topics" asp-route-categoryId="@ViewBag.CategoryId" class="btn btn-primary">Create New Topic</a>
 }
