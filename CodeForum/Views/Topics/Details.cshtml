@@ -1,0 +1,12 @@
+﻿@model Topic
+
+<div>
+    <h4>Title: @Model.Title</h4>
+    <p>Image: @Model.ImageFile</p>
+    <p>Content: @Model.Content</p>
+    <p>CreatedAt: @Model.CreatedAt</p>
+    <p>LastName: @Model.User.LastName</p>
+</div>
+<p>
+    <a asp-action="Index">Back to List</a>
+</p>

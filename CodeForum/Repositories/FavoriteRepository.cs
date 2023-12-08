@@ -17,4 +17,14 @@ public class FavoriteRepository : GenericRepository<Favorite>, IFavoriteReposito
             .Where(f => f.UserId == userId)
             .ToListAsync();
     }
+    
+    public async Task<bool> IsFavoriteAsync(int topicId, string userId)
+    {
+        return await _context.Favorites.AnyAsync(f => f.TopicId == topicId && f.UserId == userId);
+    }
+    
+    public async Task<Favorite> GetByTopicIdAndUserId(int topicId, string userId)
+    {
+        return await _context.Favorites.FirstOrDefaultAsync(f => f.TopicId == topicId && f.UserId == userId);
+    }
 }
