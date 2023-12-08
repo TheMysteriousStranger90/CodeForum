@@ -19,7 +19,9 @@ public class TopicsController : Controller
     private readonly IFileUploadService _fileUploadService;
     private readonly IWebHostEnvironment _env;
 
-    public TopicsController(ITopicRepository topicRepository, ITopicTagRepository topicTagRepository, IRatingRepository ratingRepository, IFavoriteRepository favoriteRepository, UserManager<ApplicationUser> userManager, IFileUploadService fileUploadService,
+    public TopicsController(ITopicRepository topicRepository, ITopicTagRepository topicTagRepository,
+        IRatingRepository ratingRepository, IFavoriteRepository favoriteRepository,
+        UserManager<ApplicationUser> userManager, IFileUploadService fileUploadService,
         IWebHostEnvironment env)
     {
         _topicRepository = topicRepository;
@@ -30,7 +32,7 @@ public class TopicsController : Controller
         _fileUploadService = fileUploadService;
         _env = env;
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> Index(int? categoryId)
     {
@@ -43,6 +45,7 @@ public class TopicsController : Controller
             {
                 favorites[topic.Id] = await _favoriteRepository.IsFavoriteAsync(topic.Id, userId);
             }
+
             ViewData["Favorites"] = favorites;
             return View(allTopics);
         }
@@ -50,15 +53,20 @@ public class TopicsController : Controller
         {
             var categoryTopics = await _topicRepository.GetByCategoryIdAsync(categoryId.Value);
             var favorites = new Dictionary<int, bool>();
+            var ratings = new Dictionary<int, int>();
             foreach (var topic in categoryTopics)
             {
                 favorites[topic.Id] = await _favoriteRepository.IsFavoriteAsync(topic.Id, userId);
+                var averageRating = await _ratingRepository.GetAverageRatingByTopicIdAsync(topic.Id);
+                ratings[topic.Id] = averageRating.HasValue ? (int)averageRating.Value : 0;
             }
+
             ViewData["Favorites"] = favorites;
+            ViewData["Ratings"] = ratings;
             return View(categoryTopics);
         }
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
@@ -70,7 +78,6 @@ public class TopicsController : Controller
 
         return View(topic);
     }
-    
     
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
@@ -85,17 +92,8 @@ public class TopicsController : Controller
 
         return RedirectToAction("Index");
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
     [HttpPost]
     public async Task<IActionResult> AddTagToTopic(TopicTagViewModel model)
     {
@@ -111,6 +109,7 @@ public class TopicsController : Controller
     }
 
     [HttpPost]
+    [Route("Topics/RateTopic/{topicId}")]
     public async Task<IActionResult> RateTopic(int topicId, RatingViewModel rating)
     {
         var topic = await _topicRepository.GetByIdAsync(topicId);
@@ -118,11 +117,12 @@ public class TopicsController : Controller
         {
             return NotFound();
         }
-    
+
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-    
-        var result = new Rating { TopicId = topicId, Score = rating.Score, UserId = userId};
+
+        var result = new Rating { TopicId = topicId, Score = rating.Score, UserId = userId };
         _ratingRepository.Add(result);
+        await _ratingRepository.SaveChangesAsync();
         return RedirectToAction("Index", "Topics");
     }
 
@@ -150,6 +150,6 @@ public class TopicsController : Controller
         }
 
         await _favoriteRepository.SaveChangesAsync();
-        return RedirectToAction("Index","Topics");
+        return RedirectToAction("Index", "Topics");
     }
 }

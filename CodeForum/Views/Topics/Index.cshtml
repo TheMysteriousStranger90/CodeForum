@@ -3,6 +3,8 @@
 
 @{
     var favorites = ViewData["Favorites"] as Dictionary<int, bool>;
+
+    var ratings = ViewData["Ratings"] as Dictionary<int, int> ?? new Dictionary<int, int>();
 }
 
 <ul class="list-group my-3">
@@ -32,6 +34,21 @@
                 }
             </div>
             <small class="text-muted">Created at @topic.CreatedAt.ToString("g") by @(topic.User != null ? $"{topic.User.FirstName} {topic.User.LastName}" : "Unknown")</small>
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div>
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <form asp-action="RateTopic" asp-route-id="@topic.Id" method="post" style="display:inline;">
+                            <input type="hidden" name="Score" value="@i"/>
+                            <button type="submit" class="btn btn-light ms-2">
+                                <i class="fas fa-star @(i <= (ratings.ContainsKey(topic.Id) ? ratings[topic.Id] : 0) ? "text-warning" : "")"></i>
+                            </button>
+                        </form>
+                    }
+                </div>
+            }
         </li>
     }
 </ul>

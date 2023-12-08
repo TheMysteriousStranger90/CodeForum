@@ -18,10 +18,19 @@ public class RatingRepository : GenericRepository<Rating>, IRatingRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<double> GetAverageRatingByTopicIdAsync(int topicId)
+    public async Task<double?> GetAverageRatingByTopicIdAsync(int topicId)
     {
-        return await _context.Ratings
+        var ratings = await _context.Ratings
             .Where(r => r.TopicId == topicId)
-            .AverageAsync(r => r.Score);
+            .ToListAsync();
+
+        if (ratings.Any())
+        {
+            return ratings.Average(r => r.Score);
+        }
+        else
+        {
+            return null;
+        }
     }
 }
