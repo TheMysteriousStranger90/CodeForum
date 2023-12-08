@@ -130,6 +130,67 @@ public class TopicsController : Controller
         return RedirectToAction("Index", "Category");
     }
     
+    public async Task<IActionResult> Edit(int id)
+    {
+        var topic = await _topicRepository.GetByIdAsync(id);
+        if (topic == null)
+        {
+            return NotFound();
+        }
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId != topic.UserId)
+        {
+            return NotFound("User hasn't right to edit this post");
+        }
+
+        TopicEditViewModel model = new TopicEditViewModel
+        {
+            Id = topic.Id,
+            Title = topic.Title,
+            Content = topic.Content,
+            CategoryId = topic.CategoryId
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(TopicEditViewModel model)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (ModelState.IsValid)
+        {
+            var topic = await _topicRepository.GetByIdAsync(model.Id);
+
+            if (userId != topic.UserId)
+                return NotFound("User hasn't right to edit this post");
+
+            if (topic == null)
+            {
+                return NotFound();
+            }
+
+            topic.Title = model.Title;
+            topic.Content = model.Content;
+            
+            _topicRepository.Update(topic);
+
+            if (await _topicRepository.SaveChangesAsync())
+            {
+                return RedirectToAction("Index", "Category");
+            }
+            else
+            {
+                return BadRequest($"Failed!!!");
+            }
+        }
+
+        return View(model);
+    }
+    
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
