@@ -1,0 +1,30 @@
+﻿@using System.Security.Claims
+@model IEnumerable<Topic>
+
+<ul class="list-group my-3">
+    @foreach (var topic in Model)
+    {
+        <li class="list-group-item">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="@Url.Action("Index", "Posts", new { id = topic.Id })">@topic.Title</a>
+                @if (User.IsInRole("Administrator") || User.FindFirstValue(ClaimTypes.NameIdentifier) == topic.UserId)
+                {
+                    <div>
+                        <form asp-action="Edit" asp-route-id="@topic.Id" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-primary ms-2">Edit</button>
+                        </form>
+                        <form asp-action="Delete" asp-route-id="@topic.Id" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger ms-2">Delete</button>
+                        </form>
+                    </div>
+                }
+            </div>
+            <small class="text-muted">Created at @topic.CreatedAt.ToString("g") by @topic.User.FirstName @topic.User.LastName</small>
+        </li>
+    }
+</ul>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <a class="btn btn-primary" href="@Url.Action("Create", "Topics")">Add New Topic</a>
+}

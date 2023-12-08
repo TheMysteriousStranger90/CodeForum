@@ -17,4 +17,12 @@ public class TopicRepository : GenericRepository<Topic>, ITopicRepository
             .Include(topic => topic.Posts)
             .FirstOrDefaultAsync(topic => topic.Id == id);
     }
+    
+    public async Task<IEnumerable<Topic>> GetByCategoryIdAsync(int categoryId)
+    {
+        return await _context.Topics
+            .Include(t => t.User)
+            .Where(t => t.CategoryId == categoryId)
+            .ToListAsync();
+    }
 }
