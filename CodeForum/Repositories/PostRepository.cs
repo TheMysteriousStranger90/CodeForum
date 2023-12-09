@@ -11,6 +11,12 @@ public class PostRepository : GenericRepository<Post>, IPostRepository
     {
     }
 
+    public IQueryable<Post> GetPostsForTopic(int topicId)
+    {
+        return _context.Posts
+            .Where(p => p.TopicId == topicId);
+    }
+    
     public async Task<IEnumerable<Post>> GetPostsByTopicIdAsync(int topicId)
     {
         return await _context.Posts
