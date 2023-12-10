@@ -1,4 +1,5 @@
-﻿using CodeForum.Helpers;
+﻿using System.Security.Claims;
+using CodeForum.Helpers;
 using CodeForum.Interfaces;
 using CodeForum.Models;
 using CodeForum.Services;
@@ -53,5 +54,28 @@ public class PostsController : Controller
         ViewBag.TopicId = id;
 
         return View(pagedPosts);
+    }
+    
+    
+    
+    
+    
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var post = await _postRepository.GetByIdAsync(id);
+
+        if (userId != post.UserId)
+            return NotFound("User hasn't right to delete this post");
+
+        if (post != null)
+        {
+            _postRepository.Delete(post);
+            await _topicRepository.SaveChangesAsync();
+        }
+
+        return RedirectToAction("Index", "Posts", new { id = post.TopicId });
     }
 }

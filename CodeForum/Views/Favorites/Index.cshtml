@@ -1,0 +1,22 @@
+﻿@model IEnumerable<Favorite>
+
+<div class="col-md-6 offset-md-3">
+    <div class="card card-body bg-light">
+        <h1>Your Favorite Topics</h1>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Title</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var favorite in Model)
+            {
+                <tr>
+                    <td>@favorite.Topic.Title</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

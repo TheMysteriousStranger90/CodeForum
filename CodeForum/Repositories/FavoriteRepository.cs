@@ -14,6 +14,7 @@ public class FavoriteRepository : GenericRepository<Favorite>, IFavoriteReposito
     public async Task<IEnumerable<Favorite>> GetFavoritesByUserIdAsync(string userId)
     {
         return await _context.Favorites
+            .Include(f => f.Topic)
             .Where(f => f.UserId == userId)
             .ToListAsync();
     }
