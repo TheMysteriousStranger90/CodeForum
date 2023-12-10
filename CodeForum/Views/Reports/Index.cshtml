@@ -1,0 +1,29 @@
+﻿@model IEnumerable<Report>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Content</th>
+        <th>Creation Date</th>
+        <th>Author</th>
+        <th>Reported By</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var report in Model)
+    {
+        <tr>
+            <td>@report.Post.Content</td>
+            <td>@report.Post.CreatedAt.ToShortDateString()</td>
+            <td>@report.Post.User.Email</td>
+            <td>@report.User.Email</td>
+            <td>
+                <form asp-action="Delete" asp-route-id="@report.Post.Id" method="post">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

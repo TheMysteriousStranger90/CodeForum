@@ -53,13 +53,21 @@ public class PostsController : Controller
 
         ViewBag.TopicId = id;
 
+        var reports = new Dictionary<int, bool>();
+        foreach (var post in pagedPosts)
+        {
+            var report =
+                await _reportRepository.GetReportByPostIdAndUserId(post.Id,
+                    User.FindFirstValue(ClaimTypes.NameIdentifier));
+            reports[post.Id] = report != null;
+        }
+        
+        ViewData["Reports"] = reports;
+
         return View(pagedPosts);
     }
-    
-    
-    
-    
-    
+
+
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
@@ -77,5 +85,36 @@ public class PostsController : Controller
         }
 
         return RedirectToAction("Index", "Posts", new { id = post.TopicId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("Posts/ReportPost/{postId}")]
+    public async Task<IActionResult> ReportPost(int postId)
+    {
+        var post = await _postRepository.GetByIdAsync(postId);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (post == null || userId == null)
+        {
+            return NotFound();
+        }
+
+        var existingFavorite = await _reportRepository.GetReportByPostIdAndUserId(post.Id, userId);
+        if (existingFavorite != null)
+        {
+            _reportRepository.Delete(existingFavorite);
+        }
+        else
+        {
+            var report = new Report()
+            {
+                TopicId = post.TopicId, PostId = post.Id, UserId = userId, Content = post.Content,
+                ReportedAt = DateTime.Now
+            };
+            _reportRepository.Add(report);
+        }
+
+        await _reportRepository.SaveChangesAsync();
+        return RedirectToAction("Index", "Topics");
     }
 }

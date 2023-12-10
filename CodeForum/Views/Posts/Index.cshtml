@@ -1,5 +1,9 @@
 ﻿@model CodeForum.Helpers.PagedList<Post>
 
+@{
+    var reports = ViewData["Reports"] as Dictionary<int, bool>;
+}
+
 <div class="row">
     <div class="col-md-2 offset-md-4 m-3">
         <div class="text-center">
@@ -35,12 +39,23 @@
                 <p>@post.CreatedAt.ToShortDateString()</p>
                 <p>@post.User?.Email</p>
             </div>
-            <form asp-action="Delete" asp-route-id="@post.Id" method="post">
-                <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@post.Id">Edit</a>
-                <button type="submit" class="btn btn-sm btn-danger">
-                    Delete
-                </button>
-            </form>
+            <div class="d-flex justify-content-between">
+                <div>
+                    <form asp-action="Delete" asp-route-id="@post.Id" method="post">
+                        <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@post.Id">Edit</a>
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+                <div>
+                    <form asp-action="ReportPost" asp-route-id="@post.Id" method="post">
+                        <button type="submit" class="btn btn-light ms-2">
+                            <i class="fas fa-flag @(reports[post.Id] ? "text-danger" : "")"></i> Report
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 }
@@ -70,4 +85,4 @@
             }
         </ul>
     </div>
-</div
+</div>
