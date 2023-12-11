@@ -1,0 +1,13 @@
+﻿@model IEnumerable<LikeDislike>
+
+<h2>Your Likes and Dislikes</h2>
+
+<ul>
+    @foreach (var likeDislike in Model)
+    {
+        <li>
+            Post Content: @likeDislike.Post.Content, 
+            Liked: @(likeDislike.IsLike ? "Yes" : "No")
+        </li>
+    }
+</ul>

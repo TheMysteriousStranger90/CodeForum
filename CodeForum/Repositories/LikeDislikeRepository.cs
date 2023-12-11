@@ -14,6 +14,7 @@ public class LikeDislikeRepository : GenericRepository<LikeDislike>, ILikeDislik
     public async Task<IEnumerable<LikeDislike>> GetLikesDislikesByUserIdAsync(string userId)
     {
         return await _context.LikesDislikes
+            .Include(ld => ld.Post)
             .Where(ld => ld.UserId == userId)
             .ToListAsync();
     }
