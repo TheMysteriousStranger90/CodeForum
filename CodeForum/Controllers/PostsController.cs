@@ -224,7 +224,7 @@ public class PostsController : Controller
         }
 
         await _reportRepository.SaveChangesAsync();
-        return RedirectToAction("Index", "Topics");
+        return RedirectToAction("Index", "Posts", new { id = post.TopicId });
     }
 
     [HttpPost]
@@ -236,6 +236,8 @@ public class PostsController : Controller
         var existingLikeDislike = _likeDislikeRepository.GetLikesDislikesByUserIdAsync(userId)
             .Result
             .FirstOrDefault(ld => ld.PostId == postId);
+        
+        var post = await _postRepository.GetByIdAsync(postId);
 
         if (existingLikeDislike != null)
         {
@@ -256,6 +258,6 @@ public class PostsController : Controller
         }
 
         await _likeDislikeRepository.SaveChangesAsync();
-        return RedirectToAction("Index", "Posts");
+        return RedirectToAction("Index", "Posts", new { id = post.TopicId });
     }
 }
