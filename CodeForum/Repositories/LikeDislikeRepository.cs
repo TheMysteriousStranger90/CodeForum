@@ -17,4 +17,11 @@ public class LikeDislikeRepository : GenericRepository<LikeDislike>, ILikeDislik
             .Where(ld => ld.UserId == userId)
             .ToListAsync();
     }
+    
+    public async Task<IEnumerable<LikeDislike>> GetLikesDislikesByPostIdAsync(int postId)
+    {
+        return await _context.LikesDislikes
+            .Where(ld => ld.PostId == postId)
+            .ToListAsync();
+    }
 }

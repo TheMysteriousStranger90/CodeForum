@@ -60,8 +60,11 @@ public class PostsController : Controller
                 await _reportRepository.GetReportByPostIdAndUserId(post.Id,
                     User.FindFirstValue(ClaimTypes.NameIdentifier));
             reports[post.Id] = report != null;
+            
+            var likesDislikes = await _likeDislikeRepository.GetLikesDislikesByPostIdAsync(post.Id);
+            ViewData["LikesDislikes" + post.Id] = likesDislikes;
         }
-        
+    
         ViewData["Reports"] = reports;
 
         return View(pagedPosts);
@@ -116,5 +119,37 @@ public class PostsController : Controller
 
         await _reportRepository.SaveChangesAsync();
         return RedirectToAction("Index", "Topics");
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("Posts/LikeDislikePost/{postId}")]
+    public async Task<IActionResult> LikeDislikePost(int postId, bool isLike)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var existingLikeDislike = _likeDislikeRepository.GetLikesDislikesByUserIdAsync(userId)
+            .Result
+            .FirstOrDefault(ld => ld.PostId == postId);
+
+        if (existingLikeDislike != null)
+        {
+            if (existingLikeDislike.IsLike == isLike)
+            {
+                _likeDislikeRepository.Delete(existingLikeDislike);
+            }
+            else
+            {
+                existingLikeDislike.IsLike = isLike;
+                _likeDislikeRepository.Update(existingLikeDislike);
+            }
+        }
+        else
+        {
+            var likeDislike = new LikeDislike { PostId = postId, UserId = userId, IsLike = isLike };
+            _likeDislikeRepository.Add(likeDislike);
+        }
+
+        await _likeDislikeRepository.SaveChangesAsync();
+        return RedirectToAction("Index", "Posts", new { id = postId });
     }
 }
