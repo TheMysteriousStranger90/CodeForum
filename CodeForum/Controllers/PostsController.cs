@@ -2,6 +2,7 @@
 using CodeForum.Helpers;
 using CodeForum.Interfaces;
 using CodeForum.Models;
+using CodeForum.Models.ViewModels;
 using CodeForum.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -60,16 +61,117 @@ public class PostsController : Controller
                 await _reportRepository.GetReportByPostIdAndUserId(post.Id,
                     User.FindFirstValue(ClaimTypes.NameIdentifier));
             reports[post.Id] = report != null;
-            
+
             var likesDislikes = await _likeDislikeRepository.GetLikesDislikesByPostIdAsync(post.Id);
             ViewData["LikesDislikes" + post.Id] = likesDislikes;
         }
-    
+
         ViewData["Reports"] = reports;
 
         return View(pagedPosts);
     }
 
+    [HttpGet]
+    public IActionResult Create(int? topicId)
+    {
+        if (topicId == null) return RedirectToAction("Index");
+
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(PostAddViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var post = new Post
+        {
+            Content = model.Content,
+            TopicId = model.TopicId,
+            UserId = userId,
+            CreatedAt = DateTime.Now,
+        };
+
+        if (model.ImageFile != null)
+        {
+            var filePath = await _uploadService.UploadFileWithoutPathAsync(model.ImageFile);
+            post.Image = filePath;
+        }
+        else
+        {
+            post.Image = "";
+        }
+
+        _postRepository.Add(post);
+        await _postRepository.SaveChangesAsync();
+
+        return RedirectToAction("Index", "Posts", new { id = model.TopicId });
+    }
+
+    public async Task<IActionResult> Edit(int id)
+    {
+        var post = await _postRepository.GetByIdAsync(id);
+        if (post == null)
+        {
+            return NotFound();
+        }
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId != post.UserId)
+        {
+            return NotFound("User hasn't right to edit this post");
+        }
+
+        PostEditViewModel model = new PostEditViewModel
+        {
+            Id = post.Id,
+            Content = post.Content,
+            CreatedAt = DateTime.Now,
+            TopicId = post.TopicId
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(PostEditViewModel model)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (ModelState.IsValid)
+        {
+            var post = await _postRepository.GetByIdAsync(model.Id);
+
+            if (userId != post.UserId)
+                return NotFound("User hasn't right to edit this post");
+
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            post.Content = model.Content;
+
+            _postRepository.Update(post);
+
+            if (await _postRepository.SaveChangesAsync())
+            {
+                return RedirectToAction("Index", "Posts", new { id = post.TopicId });
+            }
+            else
+            {
+                return BadRequest($"Failed!!!");
+            }
+        }
+
+        return View(model);
+    }
 
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
@@ -120,7 +222,7 @@ public class PostsController : Controller
         await _reportRepository.SaveChangesAsync();
         return RedirectToAction("Index", "Topics");
     }
-    
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Route("Posts/LikeDislikePost/{postId}")]
@@ -150,6 +252,6 @@ public class PostsController : Controller
         }
 
         await _likeDislikeRepository.SaveChangesAsync();
-        return RedirectToAction("Index", "Posts", new { id = postId });
+        return RedirectToAction("Index", "Posts");
     }
 }
