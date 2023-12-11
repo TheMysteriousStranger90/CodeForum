@@ -17,4 +17,19 @@ public class NotificationRepository : GenericRepository<Notification>, INotifica
             .Where(n => n.UserId == userId)
             .ToListAsync();
     }
+    
+    public async Task CreatePostNotificationAsync(Post post)
+    {
+        var topic = await _context.Topics.FindAsync(post.TopicId);
+        var notification = new Notification
+        {
+            UserId = topic.UserId,
+            Content = $"Your topic has been commented on by {post.UserId}",
+            IsRead = false,
+            CreatedAt = DateTime.Now
+        };
+
+        await _context.Notifications.AddAsync(notification);
+        await _context.SaveChangesAsync();
+    }
 }

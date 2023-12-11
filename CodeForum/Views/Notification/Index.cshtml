@@ -1,0 +1,14 @@
+﻿@model IEnumerable<Notification>
+
+<h2>Your Notifications</h2>
+
+<ul>
+    @foreach (var notification in Model)
+    {
+        <li>
+            <p>@notification.Content</p>
+            <p>@notification.CreatedAt.ToString("g")</p>
+            <p>Read: @(notification.IsRead ? "Yes" : "No")</p>
+        </li>
+    }
+</ul>

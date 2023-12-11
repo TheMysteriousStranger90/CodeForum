@@ -17,17 +17,20 @@ public class PostsController : Controller
     private readonly IPostRepository _postRepository;
     private readonly ILikeDislikeRepository _likeDislikeRepository;
     private readonly IReportRepository _reportRepository;
+    private readonly INotificationRepository _notificationRepository;
     private readonly IFileUploadService _uploadService;
     private readonly IWebHostEnvironment _env;
 
     public PostsController(ITopicRepository topicRepository, IPostRepository postRepository,
         ILikeDislikeRepository likeDislikeRepository,
-        IReportRepository reportRepository, IFileUploadService uploadService, IWebHostEnvironment env)
+        IReportRepository reportRepository, INotificationRepository notificationRepository,
+        IFileUploadService uploadService, IWebHostEnvironment env)
     {
         _topicRepository = topicRepository;
         _postRepository = postRepository;
         _likeDislikeRepository = likeDislikeRepository;
         _reportRepository = reportRepository;
+        _notificationRepository = notificationRepository;
         _uploadService = uploadService;
         _env = env;
     }
@@ -109,6 +112,7 @@ public class PostsController : Controller
 
         _postRepository.Add(post);
         await _postRepository.SaveChangesAsync();
+        await _notificationRepository.CreatePostNotificationAsync(post);
 
         return RedirectToAction("Index", "Posts", new { id = model.TopicId });
     }
