@@ -17,12 +17,16 @@ public class TopicsController : Controller
     private readonly ITagRepository _tagRepository;
     private readonly IRatingRepository _ratingRepository;
     private readonly IFavoriteRepository _favoriteRepository;
+    private readonly IPostRepository _postRepository;
+    private readonly IReportRepository _reportRepository;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IFileUploadService _fileUploadService;
     private readonly IWebHostEnvironment _env;
 
     public TopicsController(ITopicRepository topicRepository, ITopicTagRepository topicTagRepository,
-        IRatingRepository ratingRepository, IFavoriteRepository favoriteRepository, ITagRepository tagRepository, ICategoryRepository categoryRepository,
+        IReportRepository reportRepository, IPostRepository postRepository,
+        IRatingRepository ratingRepository, IFavoriteRepository favoriteRepository, ITagRepository tagRepository,
+        ICategoryRepository categoryRepository,
         UserManager<ApplicationUser> userManager, IFileUploadService fileUploadService,
         IWebHostEnvironment env)
     {
@@ -34,6 +38,8 @@ public class TopicsController : Controller
         _tagRepository = tagRepository;
         _userManager = userManager;
         _fileUploadService = fileUploadService;
+        _postRepository = postRepository;
+        _reportRepository = reportRepository;
         _env = env;
     }
 
@@ -49,7 +55,7 @@ public class TopicsController : Controller
         else
         {
             topics = await _topicRepository.GetByCategoryIdAsync(categoryId.Value);
-            ViewBag.CategoryId = categoryId.Value; 
+            ViewBag.CategoryId = categoryId.Value;
         }
 
         var favorites = new Dictionary<int, bool>();
@@ -60,19 +66,20 @@ public class TopicsController : Controller
             var averageRating = await _ratingRepository.GetAverageRatingByTopicIdAsync(topic.Id);
             ratings[topic.Id] = averageRating.HasValue ? (int)averageRating.Value : 0;
         }
+
         ViewData["Favorites"] = favorites;
         ViewData["Ratings"] = ratings;
-        
+
         return View(topics);
     }
-    
+
     [HttpGet]
     public IActionResult Create(int categoryId)
     {
         var model = new TopicAddViewModel { CategoryId = categoryId };
         return View(model);
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> Create(TopicAddViewModel model)
     {
@@ -87,9 +94,9 @@ public class TopicsController : Controller
             ModelState.AddModelError("", "The selected category does not exist.");
             return View(model);
         }
-        
+
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-    
+
         var topic = new Topic
         {
             Title = model.Title,
@@ -98,7 +105,7 @@ public class TopicsController : Controller
             UserId = userId,
             CreatedAt = DateTime.Now
         };
-    
+
         if (model.ImageFile != null)
         {
             var fileName = Path.GetFileName(model.ImageFile.FileName);
@@ -108,10 +115,10 @@ public class TopicsController : Controller
             var relativePath = "/images/topics/" + fileName;
             topic.Image = relativePath;
         }
-    
+
         _topicRepository.Add(topic);
         await _topicRepository.SaveChangesAsync();
-    
+
         foreach (var tagName in model.Tags)
         {
             var tag = await _tagRepository.GetByNameAsync(tagName);
@@ -121,15 +128,16 @@ public class TopicsController : Controller
                 _tagRepository.Add(tag);
                 await _tagRepository.SaveChangesAsync();
             }
-        
+
             var topicTag = new TopicTag { TopicId = topic.Id, TagId = tag.Id };
             _topicTagRepository.Add(topicTag);
         }
+
         await _topicTagRepository.SaveChangesAsync();
 
-        return RedirectToAction("Index", "Category");
+        return RedirectToAction("Index", "Topics", new { id = topic.CategoryId });
     }
-    
+
     public async Task<IActionResult> Edit(int id)
     {
         var topic = await _topicRepository.GetByIdAsync(id);
@@ -175,7 +183,7 @@ public class TopicsController : Controller
 
             topic.Title = model.Title;
             topic.Content = model.Content;
-            
+
             _topicRepository.Update(topic);
 
             if (await _topicRepository.SaveChangesAsync())
@@ -190,7 +198,7 @@ public class TopicsController : Controller
 
         return View(model);
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
@@ -202,19 +210,33 @@ public class TopicsController : Controller
 
         return View(topic);
     }
-    
+
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> DeleteTopic(int id)
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var topic = await _topicRepository.GetByIdAsync(id);
-        if (topic != null)
+        if (topic == null)
         {
-            _topicRepository.Delete(topic);
-            await _topicRepository.SaveChangesAsync();
+            throw new ArgumentException("Topic with the given id does not exist");
         }
 
-        return RedirectToAction("Index");
+        var posts = await _postRepository.GetPostsByTopicIdAsync(topic.Id);
+
+        foreach (var post in posts)
+        {
+            var reports = await _reportRepository.GetReportByPostIdAndUserId(post.Id, userId);
+
+            _reportRepository.Delete(reports);
+
+            _postRepository.Delete(post);
+        }
+
+        _topicRepository.Delete(topic);
+        await _topicRepository.SaveChangesAsync();
+
+        return RedirectToAction("Index", "Topics", new { categoryId = topic.CategoryId });
     }
 
 
@@ -229,7 +251,8 @@ public class TopicsController : Controller
 
         var topicTag = new TopicTag { TopicId = model.TopicId, TagId = model.TagId };
         _topicTagRepository.Add(topicTag);
-        return RedirectToAction("Index", "Topics");
+
+        return RedirectToAction("Index", "Topics", new { id = topic.CategoryId });
     }
 
     [HttpPost]
@@ -247,7 +270,8 @@ public class TopicsController : Controller
         var result = new Rating { TopicId = topicId, Score = rating.Score, UserId = userId };
         _ratingRepository.Add(result);
         await _ratingRepository.SaveChangesAsync();
-        return RedirectToAction("Index", "Topics");
+
+        return RedirectToAction("Index", "Topics", new { categoryId = topic.CategoryId });
     }
 
     [HttpPost]
@@ -274,6 +298,6 @@ public class TopicsController : Controller
         }
 
         await _favoriteRepository.SaveChangesAsync();
-        return RedirectToAction("Index", "Topics");
+        return RedirectToAction("Index", "Topics", new { categoryId = topic.CategoryId });
     }
 }
