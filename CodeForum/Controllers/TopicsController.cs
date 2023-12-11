@@ -135,7 +135,7 @@ public class TopicsController : Controller
 
         await _topicTagRepository.SaveChangesAsync();
 
-        return RedirectToAction("Index", "Topics", new { id = topic.CategoryId });
+        return RedirectToAction("Index", "Topics", new { categoryId = topic.CategoryId });
     }
 
     public async Task<IActionResult> Edit(int id)
