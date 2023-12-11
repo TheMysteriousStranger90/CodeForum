@@ -27,6 +27,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfiguration(new ApplicationUserConfiguration());
+        modelBuilder.ApplyConfiguration(new CategoryConfiguration());
         modelBuilder.ApplyConfiguration(new TopicConfiguration());
         modelBuilder.ApplyConfiguration(new PostConfiguration());
         modelBuilder.ApplyConfiguration(new RatingConfiguration());

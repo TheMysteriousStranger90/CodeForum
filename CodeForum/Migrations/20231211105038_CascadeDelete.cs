@@ -5,7 +5,7 @@
 namespace CodeForum.Migrations
 {
     /// <inheritdoc />
-    public partial class AllowNull : Migration
+    public partial class CascadeDelete : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

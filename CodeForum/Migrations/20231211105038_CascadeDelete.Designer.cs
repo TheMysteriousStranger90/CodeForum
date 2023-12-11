@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CodeForum.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231206173444_AllowNull")]
-    partial class AllowNull
+    [Migration("20231211105038_CascadeDelete")]
+    partial class CascadeDelete
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

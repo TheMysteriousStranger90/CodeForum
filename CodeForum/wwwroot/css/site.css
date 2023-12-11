@@ -16,13 +16,13 @@ body {
 }
 
 .btn-primary {
-  background-color: #258cfb;
-  border-color: #258cfb;
+  background-color: #333;
+  border-color: #333;
 }
 
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
-  background-color: #1576d2;
-  border-color: #1576d2;
+  background-color: #333;
+  border-color: #333;
 }
 
 .btn-primary:focus {
@@ -39,11 +39,11 @@ body {
 }
 
 a {
-  color: #258cfb;
+  color: #333;
 }
 
 a:hover {
-  color: #1576d2;
+  color: #333;
   text-decoration: none;
 }
 
@@ -77,7 +77,7 @@ a:hover {
 }
 
 .navbar {
-  background-color: #258cfb;
+  background-color: #eb6864;
 }
 
 .container {
@@ -127,7 +127,7 @@ a:hover {
 }
 
 .custom-item {
-  border-color: #007bff;
+  border-color: #eb6864;
 }
 
 .list-group {
@@ -136,6 +136,6 @@ a:hover {
 }
 
 .list-group-item {
-  border-color: #007bff;
+  border-color: #eb6864;
   background-color: #f8f9fa;
 }
