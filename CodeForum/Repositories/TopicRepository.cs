@@ -10,6 +10,14 @@ public class TopicRepository : GenericRepository<Topic>, ITopicRepository
     public TopicRepository(ApplicationDbContext context) : base(context)
     {
     }
+    
+    public async Task<Topic> GetByIdAsync(int id)
+    {
+        return await _context.Topics
+            .Include(t => t.TopicTags)
+            .ThenInclude(tt => tt.Tag)
+            .FirstOrDefaultAsync(t => t.Id == id);
+    }
 
     public async Task<Topic> GetTopicWithPostsByIdAsync(int id)
     {

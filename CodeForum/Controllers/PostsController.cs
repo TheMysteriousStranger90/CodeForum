@@ -70,6 +70,7 @@ public class PostsController : Controller
         }
 
         ViewData["Reports"] = reports;
+        ViewData["Topic"] = topic;
 
         return View(pagedPosts);
     }
