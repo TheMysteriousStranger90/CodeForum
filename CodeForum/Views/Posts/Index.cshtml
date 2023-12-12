@@ -43,7 +43,7 @@
             <div>
                 <p>@post.Content</p>
                 <p>@post.CreatedAt.ToShortDateString()</p>
-                <p>@post.User?.Email</p>
+                <p>@(post.User?.FirstName + " " + post.User?.LastName ?? "User is not defined")</p>
             </div>
             <div class="d-flex justify-content-between">
                 <div>

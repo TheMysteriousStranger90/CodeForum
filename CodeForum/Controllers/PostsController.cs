@@ -87,11 +87,6 @@ public class PostsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(PostAddViewModel model)
     {
-        if (!ModelState.IsValid)
-        {
-            return View(model);
-        }
-
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var post = new Post
         {
@@ -237,7 +232,7 @@ public class PostsController : Controller
         var existingLikeDislike = _likeDislikeRepository.GetLikesDislikesByUserIdAsync(userId)
             .Result
             .FirstOrDefault(ld => ld.PostId == postId);
-        
+
         var post = await _postRepository.GetByIdAsync(postId);
 
         if (existingLikeDislike != null)

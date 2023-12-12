@@ -5,24 +5,17 @@
         <h2>Add Post</h2>
 
         <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="TopicId">
             <div class="form-group">
                 <label for="Content">Content</label>
                 <textarea asp-for="Content" class="form-control"></textarea>
                 <span asp-validation-for="Content" class="text-danger"></span>
             </div>
-
-            <div class="form-group">
-                <label for="ImageFile">Image</label>
-                <input type="file" asp-for="ImageFile" class="form-control">
-            </div>
-
-            <input type="hidden" asp-for="TopicId">
-
             <button type="submit" class="btn btn-primary submit-button">Add Post</button>
         </form>
     </div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }
