@@ -1,20 +1,107 @@
 ﻿@model CodeForum.Models.ViewModels.PostAddViewModel
 
-<div class="col-md-6 offset-md-3">
-    <div class="card card-body bg-light">
-        <h2>Add Post</h2>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="login-card fade-in">
+                <div class="card-header text-center">
+                    <div class="post-icon">
+                        <i class="fas fa-comment-dots fa-3x mb-3"></i>
+                    </div>
+                    <h3 class="login-title">Add New Post</h3>
+                    <p class="text-muted">Share your thoughts with the community</p>
+                </div>
 
-        <form asp-action="Create" method="post" enctype="multipart/form-data">
-            <input type="hidden" asp-for="TopicId">
-            <div class="form-group">
-                <label for="Content">Content</label>
-                <textarea asp-for="Content" class="form-control"></textarea>
-                <span asp-validation-for="Content" class="text-danger"></span>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <input type="hidden" asp-for="TopicId">
+                        <div class="form-group floating-label mb-4">
+                            <textarea asp-for="Content" class="form-control" rows="6" placeholder=" "></textarea>
+                            <label asp-for="Content">
+                                <i class="fas fa-pen me-2"></i>Your Message
+                            </label>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Post
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary submit-button">Add Post</button>
-        </form>
+        </div>
     </div>
 </div>
+
+<style>
+.post-icon {
+    color: var(--primary);
+    margin: 2rem 0;
+}
+
+.login-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    margin: 2rem 0;
+}
+
+.card-header {
+    background: none;
+    border: none;
+    padding: 2rem 1rem;
+}
+
+.login-title {
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.floating-label {
+    position: relative;
+}
+
+.floating-label textarea {
+    min-height: 120px;
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+}
+
+.floating-label label {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    color: #757575;
+}
+
+.floating-label textarea:focus ~ label,
+.floating-label textarea:not(:placeholder-shown) ~ label {
+    top: -0.5rem;
+    left: 0.5rem;
+    background: white;
+    padding: 0 0.5rem;
+    font-size: 0.85rem;
+    color: var(--primary);
+}
+
+.btn-primary {
+    height: 45px;
+    padding: 0 1.5rem;
+    font-weight: 500;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+</style>
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }

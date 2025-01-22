@@ -1,24 +1,104 @@
 ﻿@model CodeForum.Models.ViewModels.PostEditViewModel
 
-<h2>Edit Post</h2>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="login-card fade-in">
+                <div class="card-header text-center">
+                    <div class="edit-post-icon">
+                        <i class="fas fa-edit fa-3x mb-3"></i>
+                    </div>
+                    <h3 class="login-title">Edit Post</h3>
+                    <p class="text-muted">Update your message</p>
+                </div>
 
-@{
-    ViewBag.Title = "Edit";
-}
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="Id"/>
+                        <input type="hidden" asp-for="TopicId"/>
 
-<div class="col-md-6 offset-md-3">
-    <div class="card card-body bg-light">
-        <form asp-action="Edit" method="post">
-            <input type="hidden" asp-for="Id" />
-            <input type="hidden" asp-for="TopicId" />
-            <div class="form-group">
-                <label asp-for="Content"></label>
-                <textarea asp-for="Content" class="form-control" rows="4"></textarea>
-                <span asp-validation-for="Content" class="text-danger"></span>
+                        <div class="form-group floating-label mb-4">
+                            <textarea asp-for="Content" class="form-control" rows="6" placeholder=" "></textarea>
+                            <label asp-for="Content">
+                                <i class="fas fa-pen me-2"></i>Message Content
+                            </label>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" asp-route-id="@Model.TopicId"
+                               class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group m-2">
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
+
+<style>
+.edit-post-icon {
+    color: var(--primary);
+    margin: 2rem 0;
+}
+
+.login-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    margin: 2rem 0;
+}
+
+.card-header {
+    background: none;
+    border: none;
+    padding: 2rem 1rem;
+}
+
+.login-title {
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.floating-label {
+    position: relative;
+}
+
+.floating-label textarea {
+    min-height: 120px;
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+}
+
+.floating-label label {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    color: #757575;
+}
+
+.floating-label textarea:focus ~ label,
+.floating-label textarea:not(:placeholder-shown) ~ label {
+    top: -0.5rem;
+    left: 0.5rem;
+    background: white;
+    padding: 0 0.5rem;
+    font-size: 0.85rem;
+    color: var(--primary);
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+</style>

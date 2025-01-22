@@ -1,4 +1,5 @@
 ﻿@using System.Security.Claims
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model IEnumerable<Topic>
 
 @{
@@ -7,36 +8,38 @@
     var ratings = ViewData["Ratings"] as Dictionary<int, int> ?? new Dictionary<int, int>();
 }
 
-<ul class="list-group my-3">
+<ul class="custom-list-group my-3">
     @foreach (var topic in Model)
     {
-        <li class="list-group-item">
+        <li class="custom-list-item">
             <small class="text-muted">Created at @topic.CreatedAt.ToString("g") by @(topic.User != null ? $"{topic.User.FirstName} {topic.User.LastName}" : "Unknown")</small>
 
-          <div class="d-flex justify-content-between align-items-center">
-              <div class="d-flex justify-content-start flex-grow-1">
-                  <a href="@Url.Action("Index", "Posts", new { id = topic.Id })">@topic.Title</a>
-              </div>
-              <div class="d-flex justify-content-end">
-                  @if (User.IsInRole("Administrator") || User.FindFirstValue(ClaimTypes.NameIdentifier) == topic.UserId)
-                  {
-                      <form asp-action="Edit" asp-route-id="@topic.Id" method="post" style="display:inline;">
-                          <button type="submit" class="btn btn-primary ms-2">Edit</button>
-                      </form>
-                      <form asp-action="Delete" asp-route-id="@topic.Id" method="post" style="display:inline;">
-                          <button type="submit" class="btn btn-danger ms-2">Delete</button>
-                      </form>
-                  }
-                  @if (User.Identity.IsAuthenticated)
-                  {
-                      <form asp-action="FavoriteTopic" asp-route-id="@topic.Id" method="post" style="display:inline;">
-                          <button type="submit" class="btn btn-light ms-2">
-                              <i class="fas fa-heart @(favorites[topic.Id] ? "text-warning" : "")"></i>
-                          </button>
-                      </form>
-                  }
-              </div>
-          </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-start flex-grow-1">
+                    <a href="@Url.Action("Index", "Posts", new { id = topic.Id })">@topic.Title</a>
+                </div>
+                <div class="d-flex justify-content-end">
+                    @if (User.IsInRole("Administrator") || User.FindFirstValue(ClaimTypes.NameIdentifier) == topic.UserId)
+                    {
+                        <div class="action-buttons">
+                            <form asp-action="Edit" asp-route-id="@topic.Id" method="post" class="d-inline-block me-2">
+                                <button type="submit" class="btn btn-primary">Edit</button>
+                            </form>
+                            <form asp-action="Delete" asp-route-id="@topic.Id" method="post" class="d-inline-block">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </div>
+                    }
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <form asp-action="FavoriteTopic" asp-route-id="@topic.Id" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-light ms-2">
+                                <i class="fas fa-heart @(favorites[topic.Id] ? "text-warning" : "")"></i>
+                            </button>
+                        </form>
+                    }
+                </div>
+            </div>
 
             @if (User.Identity.IsAuthenticated)
             {
@@ -60,3 +63,36 @@
 {
     <a asp-action="Create" asp-controller="Topics" asp-route-categoryId="@ViewBag.CategoryId" class="btn btn-primary">Create New Topic</a>
 }
+
+<style>
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}    
+
+.custom-list-group {
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--light);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.custom-list-item {
+    background: white;
+    border-left: 4px solid var(--primary);
+    margin-bottom: 1rem;
+    padding: 1.5rem;
+    transition: all var(--transition-speed) var(--transition-easing);
+}
+
+.dark-theme .custom-list-item {
+    background: #2c2c2c;
+    border-left: 4px solid var(--primary);
+}
+
+.dark-theme .custom-list-item:hover {
+    background: rgba(var(--bs-primary-rgb), 0.15);
+}
+</style>
