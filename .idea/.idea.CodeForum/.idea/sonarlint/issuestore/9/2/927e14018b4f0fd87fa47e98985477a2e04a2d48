@@ -1,5 +1,0 @@
-
-fcsharpsquid:S3267="=Loop should be simplified by calling Select(post => post.Id))(æ§«üÿÿÿÿ8µñß¼Å1
-‹csharpsquid:S2583š"fChange this condition so that it does not always evaluate to 'False'. Some code paths are unreachable.(Úüòö8şÌòÀÅ1
-ncsharpsquid:S2589º"DChange this condition so that it does not always evaluate to 'True'.(Ñ”®øÿÿÿÿ8Ú×û‘Å1
-rcsharpsquid:S4487"NRemove this unread private field '_env' or refactor the code to use its value.( ‚×ñ8ùúèéÄ1
