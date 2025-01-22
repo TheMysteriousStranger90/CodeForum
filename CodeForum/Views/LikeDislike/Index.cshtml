@@ -37,7 +37,10 @@
                                         </div>
                                     </div>
                                     <div class="ms-auto">
-                                        <a href="#" class="btn btn-sm btn-outline-primary">
+                                        <a asp-controller="Posts"
+                                           asp-action="Index"
+                                           asp-route-id="@likeDislike.Post.TopicId"
+                                           class="btn btn-sm btn-outline-primary">
                                             <i class="fas fa-external-link-alt"></i>
                                             View Post
                                         </a>

@@ -15,6 +15,7 @@ public class LikeDislikeRepository : GenericRepository<LikeDislike>, ILikeDislik
     {
         return await _context.LikesDislikes
             .Include(ld => ld.Post)
+            .ThenInclude(p => p.Topic)
             .Where(ld => ld.UserId == userId)
             .ToListAsync();
     }

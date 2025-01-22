@@ -31,6 +31,8 @@ public class FavoritesController : Controller
     }
     
     [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("Favorites/Remove/{id}")]
     public async Task<IActionResult> Remove(int id)
     {
         var user = await _userManager.GetUserAsync(User);
@@ -42,6 +44,6 @@ public class FavoritesController : Controller
         _favoriteRepository.Delete(favorite);
         await _favoriteRepository.SaveChangesAsync();
 
-        return Json(new { success = true });
+        return RedirectToAction(nameof(Index));
     }
 }
