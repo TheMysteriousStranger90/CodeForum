@@ -1,35 +1,84 @@
 ﻿@model CodeForum.Models.ViewModels.LoginViewModel
 
-<div class="col-md-6 offset-md-3">
-    <div class="card card-body bg-light">
-        <form method="post" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl">
-            <div asp-validation-summary="ModelOnly"></div>
-            <div class="form-group">
-                <label asp-for="Email"></label><br/>
-                <input asp-for="Email" autocomplete="email"/>
-                <span asp-validation-for="Email"></span>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="login-card">
+            <div class="card-header text-center">
+                <h3 class="login-title">Welcome Back</h3>
+                <p class="text-muted">Sign in to continue</p>
             </div>
-            <div class="form-group">
-                <label asp-for="Password"></label><br/>
-                <input asp-for="Password" autocomplete="current-password"/>
-                <span asp-validation-for="Password"></span>
+            <div class="card-body">
+                <form method="post" asp-controller="Account" asp-action="Login" 
+                      asp-route-returnUrl="@Model.ReturnUrl" class="login-form">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    
+                    <div class="form-group floating-label">
+                        <input asp-for="Email" class="form-control" autocomplete="email" placeholder=" "/>
+                        <label asp-for="Email"></label>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-group floating-label">
+                        <input asp-for="Password" class="form-control" autocomplete="current-password" placeholder=" "/>
+                        <label asp-for="Password"></label>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                        <i class="toggle-password fas fa-eye" onclick="togglePassword()"></i>
+                    </div>
+                    
+                    <div class="form-group remember-forgot">
+                        <div class="custom-control custom-checkbox">
+                            <input asp-for="RememberMe" class="custom-control-input"/>
+                            <label asp-for="RememberMe" class="custom-control-label"></label>
+                        </div>
+                        <a asp-controller="Account" asp-action="ForgotPassword" class="forgot-link">
+                            Forgot Password?
+                        </a>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block btn-login">
+                        <span class="btn-text">Sign In</span>
+                        <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                    </button>
+                    <div class="text-center mt-4">
+                        <span>Don't have an account? </span>
+                        <a asp-controller="Account" asp-action="Register" class="register-link">
+                            Sign up
+                        </a>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="RememberMe"></label><br/>
-                <input asp-for="RememberMe"/>
-            </div>
-            <div class="form-group">
-                <div class="col-1 my-4">
-                    <button type="submit" class="btn btn-primary">Login</button>
-                </div>
-            </div>
-            <div class="form-group">
-                <a asp-controller="Account" asp-action="ForgotPassword">Forgot Password?</a>
-            </div>
-        </form>
+        </div>
+    </div>
     </div>
 </div>
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    
+    <script>
+        function togglePassword() {
+            const password = document.querySelector('[asp-for="Password"]');
+            const icon = document.querySelector('.toggle-password');
+            
+            if (password.type === 'password') {
+                password.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                password.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const btn = this.querySelector('.btn-login');
+            const text = btn.querySelector('.btn-text');
+            const spinner = btn.querySelector('.spinner-border');
+            
+            text.classList.add('d-none');
+            spinner.classList.remove('d-none');
+        });
+    </script>
 }

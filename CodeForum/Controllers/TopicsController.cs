@@ -208,7 +208,18 @@ public class TopicsController : Controller
             return NotFound();
         }
 
-        return View(topic);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isFavorite = await _favoriteRepository.IsFavoriteAsync(id, userId);
+        var averageRating = await _ratingRepository.GetAverageRatingByTopicIdAsync(id);
+
+        var viewModel = new TopicDetailsViewModel
+        {
+            Topic = topic,
+            IsFavorite = isFavorite,
+            AverageRating = averageRating ?? 0
+        };
+
+        return View(viewModel);
     }
 
     [HttpPost, ActionName("Delete")]

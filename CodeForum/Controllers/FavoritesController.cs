@@ -29,4 +29,19 @@ public class FavoritesController : Controller
         var favorites = await _favoriteRepository.GetFavoritesByUserIdAsync(user.Id);
         return View(favorites);
     }
+    
+    [HttpPost]
+    public async Task<IActionResult> Remove(int id)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return NotFound();
+
+        var favorite = await _favoriteRepository.GetByIdAsync(id);
+        if (favorite == null || favorite.UserId != user.Id) return NotFound();
+
+        _favoriteRepository.Delete(favorite);
+        await _favoriteRepository.SaveChangesAsync();
+
+        return Json(new { success = true });
+    }
 }

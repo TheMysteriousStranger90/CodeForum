@@ -1,19 +1,55 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @model CodeForum.Models.ViewModels.ChangeRoleViewModel
 
-<h2>Changing roles for a user @Model.UserEmail</h2>
- <div class="col-md-6 offset-md-3">
-     <div class="card card-body bg-light">
-     <form asp-action="Edit" method="post">
-         <input type="hidden" name="userId" value="@Model.UserId" />
-         <div class="form-group">
-             @foreach (IdentityRole role in Model.AllRoles)
-             {
-                 <input type="checkbox" name="roles" value="@role.Name"
-                        @(Model.UserRoles.Contains(role.Name) ? "checked=\"checked\"" : "") />@role.Name <br />
-             }
-         </div>
-         <button type="submit" class="btn btn-primary">Save</button>
-     </form>
-     </div>
- </div>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="login-card fade-in">
+                <div class="card-header text-center">
+                    <div class="user-role-icon">
+                        <i class="fas fa-user-cog fa-3x mb-3"></i>
+                    </div>
+                    <h3 class="login-title">Manage User Roles</h3>
+                    <p class="text-muted">
+                        <i class="fas fa-user me-2"></i>@Model.UserEmail
+                    </p>
+                </div>
+
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" name="userId" value="@Model.UserId" />
+                        
+                        <div class="role-grid mb-4">
+                            @foreach (IdentityRole role in Model.AllRoles)
+                            {
+                                <div class="role-item">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" 
+                                               class="custom-control-input" 
+                                               id="@role.Name" 
+                                               name="roles" 
+                                               value="@role.Name"
+                                               @(Model.UserRoles.Contains(role.Name) ? "checked" : "") />
+                                        <label class="custom-control-label" for="@role.Name">
+                                            <i class="fas fa-user-shield me-2"></i>
+                                            @role.Name
+                                        </label>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="UserList" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

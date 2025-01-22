@@ -1,39 +1,118 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @model CodeForum.Models.ViewModels.EditUserViewModel
 
-@{
-    ViewBag.Title = "Edit";
-}
-<div class="col-md-6 offset-md-3">
-    <div class="card card-body bg-light">
-        <form asp-action="Edit" asp-controller="Users" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <input type="hidden" asp-for="Id"/>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="login-card fade-in">
+                <div class="card-header text-center">
+                    <div class="edit-user-icon">
+                        <i class="fas fa-user-edit fa-3x mb-3"></i>
+                    </div>
+                    <h3 class="login-title">Edit Profile</h3>
+                    <p class="text-muted">Update user information</p>
+                </div>
+
+                <div class="card-body">
+                    <form asp-action="Edit" asp-controller="Users" 
+                          method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <input type="hidden" asp-for="Id"/>
+
+                        <div class="text-center mb-4">
+                            <div class="profile-picture-container">
+                                <img id="profilePreview" src="#" alt="Profile Preview" 
+                                     class="profile-picture-preview d-none"/>
+                                <i class="fas fa-user-circle fa-5x profile-placeholder"></i>
+                            </div>
+                            <div class="mt-3">
+                                <label class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-camera"></i> Change Photo
+                                    <input type="file" name="ProfilePicture" id="ProfilePicture" 
+                                           class="d-none" accept="image/*"/>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group floating-label mb-3">
+                            <input type="text" asp-for="FirstName" class="form-control" placeholder=" "/>
+                            <label asp-for="FirstName">First Name</label>
+                        </div>
+
+                        <div class="form-group floating-label mb-3">
+                            <input type="text" asp-for="LastName" class="form-control" placeholder=" "/>
+                            <label asp-for="LastName">Last Name</label>
+                        </div>
+
+                        <div class="form-group floating-label mb-3">
+                            <input type="email" asp-for="Email" class="form-control" placeholder=" "/>
+                            <label asp-for="Email">Email</label>
+                        </div>
+
+                        <div class="form-group floating-label mb-4">
+                            <textarea asp-for="Bio" class="form-control" 
+                                     rows="3" placeholder=" "></textarea>
+                            <label asp-for="Bio">Bio</label>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="FirstName" class="control-label">FirstName</label>
-                <input type="text" asp-for="FirstName" class="form-control"/>
-            </div>
-            <div class="form-group">
-                <label asp-for="LastName" class="control-label">LastName</label>
-                <input type="text" asp-for="LastName" class="form-control"/>
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label">Email</label>
-                <input type="text" asp-for="Email" class="form-control"/>
-            </div>
-            <div class="form-group">
-                <label asp-for="Bio" class="control-label">Bio</label>
-                <input type="text" asp-for="Bio" class="form-control"/>
-            </div>
-            <div class="form-group">
-                <label for="ProfilePicture" class="control-label">Profile Picture</label>
-                <input type="file" name="ProfilePicture" id="ProfilePicture" class="form-control"/>
-            </div>
-            <div class="form-group m-2">
-                <input type="submit" value="Save" class="btn btn-primary"/>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
+
+<style>
+.profile-picture-container {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-picture-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-placeholder {
+    color: #dee2e6;
+}
+
+.edit-user-icon {
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+}
+</style>
+
+@section Scripts {
+    <script>
+        document.getElementById('ProfilePicture').onchange = function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('profilePreview');
+                    preview.src = e.target.result;
+                    preview.classList.remove('d-none');
+                    document.querySelector('.profile-placeholder').classList.add('d-none');
+                }
+                reader.readAsDataURL(file);
+            }
+        };
+    </script>
+}

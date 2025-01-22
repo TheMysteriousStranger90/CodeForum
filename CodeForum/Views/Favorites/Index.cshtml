@@ -1,22 +1,121 @@
 ﻿@model IEnumerable<Favorite>
 
-<div class="col-md-6 offset-md-3">
-    <div class="card card-body bg-light">
-        <h1>Your Favorite Topics</h1>
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Title</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach (var favorite in Model)
-            {
-                <tr>
-                    <td>@favorite.Topic.Title</td>
-                </tr>
-            }
-            </tbody>
-        </table>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="login-card fade-in">
+                <div class="card-header text-center">
+                    <div class="favorites-icon">
+                        <i class="fas fa-star fa-3x mb-3"></i>
+                    </div>
+                    <h3 class="login-title">Favorite Topics</h3>
+                    <p class="text-muted">
+                        <i class="fas fa-bookmark me-2"></i>
+                        Total Favorites: <span class="badge bg-primary">@Model.Count()</span>
+                    </p>
+                </div>
+
+                <div class="card-body">
+                    @if (!Model.Any())
+                    {
+                        <div class="text-center empty-state">
+                            <i class="fas fa-star-half-alt fa-4x mb-3"></i>
+                            <p>No favorite topics yet</p>
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Browse Topics
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="favorites-list">
+                            @foreach (var favorite in Model)
+                            {
+                                <div class="favorite-item">
+                                    <div class="d-flex align-items-start">
+                                        <div class="favorite-icon me-3">
+                                            <i class="fas fa-star text-warning"></i>
+                                        </div>
+                                        <div class="favorite-content">
+                                            <h5 class="mb-4">@favorite.Topic.Title</h5>
+                                        </div>
+                                        <div class="ms-auto">
+                                            <a asp-controller="Topics"
+                                               asp-action="Details"
+                                               asp-route-id="@favorite.TopicId"
+                                               class="btn btn-sm btn-outline-primary me-2">
+                                                <i class="fas fa-external-link-alt"></i> View
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-danger"
+                                                    onclick="removeFavorite(@favorite.Id)">
+                                                <i class="fas fa-star-half-alt"></i> Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<style>
+.favorites-icon {
+    color: var(--warning);
+    margin-bottom: 1.5rem;
+}
+
+.favorite-item {
+    padding: 1rem;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.favorite-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.favorite-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    text-align: center;
+}
+
+.empty-state {
+    color: var(--secondary);
+    padding: 3rem 0;
+}
+
+.favorite-content h5 {
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+}
+</style>
+
+@section Scripts {
+<script>
+    function removeFavorite(id) {
+        if (confirm('Are you sure you want to remove this from favorites?')) {
+            fetch('/Favorites/Remove/' + id, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                });
+        }
+    }
+</script>
+}
