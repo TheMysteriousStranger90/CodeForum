@@ -2,9 +2,9 @@
 
 CodeForum is an ASP.NET Core MVC application that serves as a platform for developers to discuss coding and software development topics.
 
-![Image 1](Screenshots/Screen1.png)
-![Image 2](Screenshots/Screen2.png)
-![Image 3](Screenshots/Screen3.png)
+![Image 1](Screenshots/Screen12.png)
+![Image 2](Screenshots/Screen13.png)
+![Image 3](Screenshots/Screen14.png)
 ![Image 4](Screenshots/Screen4.png)
 ![Image 5](Screenshots/Screen5.png)
 ![Image 6](Screenshots/Screen6.png)
