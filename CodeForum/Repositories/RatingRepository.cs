@@ -33,4 +33,10 @@ public class RatingRepository : GenericRepository<Rating>, IRatingRepository
             return null;
         }
     }
+    
+    public async Task<Rating> GetRatingByTopicAndUserAsync(int topicId, string userId)
+    {
+        return await _context.Ratings
+            .FirstOrDefaultAsync(r => r.TopicId == topicId && r.UserId == userId);
+    }
 }

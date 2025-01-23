@@ -19,7 +19,7 @@ public static class ApplicationServicesExtensions
 
         services.AddDbContext<ApplicationDbContext>(options =>
         {
-            options.UseSqlServer(config.GetConnectionString("DefaultConnection"));
+            options.UseSqlServer(config.GetConnectionString("DefaultLocalDBConnection"));
         });
 
         services.AddIdentity<ApplicationUser, IdentityRole>(opts =>

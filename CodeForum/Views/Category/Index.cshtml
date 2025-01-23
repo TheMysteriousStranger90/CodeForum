@@ -1,31 +1,53 @@
 ﻿@model IEnumerable<Category>
 
-<div class="my-3">
-    <h3 class="display-4">Categories</h3>
-    <p class="lead">number of categories: @Model.Count()</p>
-</div>
+<div class="categories-header fade-in text-center">
+    <h3 class="display-4 mb-3">Categories</h3>
+    <div class="d-flex justify-content-center align-items-center">
+        <i class="fas fa-folder-open me-2"></i>
+        <p class="lead mb-0">
+            Total Categories: <span class="badge bg-primary">@Model.Count()</span>
+        </p>
+    </div>
 
-<ul class="list-group my-3">
-    @foreach (var category in Model)
-    {
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <a asp-action="Index" asp-controller="Topics" asp-route-categoryId="@category.Id">@category.Name</a>
-            @if (User.IsInRole("Administrator"))
-            {
-                <div>
-                    <form asp-action="Edit" asp-route-id="@category.Id" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-primary ms-2">Edit</button>
-                    </form>
-                    <form asp-action="Delete" asp-route-id="@category.Id" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-danger ms-2">Delete</button>
-                    </form>
+    <div class="category-list">
+        @foreach (var category in Model)
+        {
+            <div class="category-item fade-in" data-id="@category.Id">
+                <div class="d-flex justify-content-between align-items-center p-3">
+                    <div class="category-info">
+                        <a asp-action="Index" asp-controller="Topics" 
+                           asp-route-categoryId="@category.Id" class="category-link">
+                            <i class="fas fa-folder me-2"></i>
+                            @category.Name
+                        </a>
+                    </div>
+
+                    @if (User.IsInRole("Administrator"))
+                    {
+                        <div class="admin-controls">
+                            <button class="btn btn-outline-primary btn-sm" 
+                                    onclick="location.href='@Url.Action("Edit", new { id = category.Id })'">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <form asp-action="Delete" asp-route-id="@category.Id" 
+                                  method="post" class="d-inline delete-form">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </form>
+                        </div>
+                    }
                 </div>
-            }
-        </li>
-    }
-</ul>
+            </div>
+        }
+    </div>
 
-@if (User.IsInRole("Administrator"))
-{
-    <a class="btn btn-primary" href="@Url.Action("Create", "Category")">Add New Category</a>
-}
+    @if (User.IsInRole("Administrator"))
+    {
+        <div class="admin-action fade-in">
+            <a class="btn btn-primary" href="@Url.Action("Create", "Category")">
+                <i class="fas fa-plus"></i> Add New Category
+            </a>
+        </div>
+    }
+</div>

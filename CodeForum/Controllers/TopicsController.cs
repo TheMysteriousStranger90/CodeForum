@@ -208,7 +208,18 @@ public class TopicsController : Controller
             return NotFound();
         }
 
-        return View(topic);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isFavorite = await _favoriteRepository.IsFavoriteAsync(id, userId);
+        var averageRating = await _ratingRepository.GetAverageRatingByTopicIdAsync(id);
+
+        var viewModel = new TopicDetailsViewModel
+        {
+            Topic = topic,
+            IsFavorite = isFavorite,
+            AverageRating = averageRating ?? 0
+        };
+
+        return View(viewModel);
     }
 
     [HttpPost, ActionName("Delete")]
@@ -217,29 +228,39 @@ public class TopicsController : Controller
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var topic = await _topicRepository.GetByIdAsync(id);
+    
         if (topic == null)
         {
-            throw new ArgumentException("Topic with the given id does not exist");
+            return NotFound("Topic not found");
         }
 
         var posts = await _postRepository.GetPostsByTopicIdAsync(topic.Id);
-
+    
         foreach (var post in posts)
         {
-            var reports = await _reportRepository.GetReportByPostIdAndUserId(post.Id, userId);
-
-            _reportRepository.Delete(reports);
+            // Get all reports for this post
+            var reports = await _reportRepository.GetReportsByPostIdAsync(post.Id);
+        
+            // Delete all reports for this post
+            if (reports != null && reports.Any())
+            {
+                foreach (var report in reports)
+                {
+                    _reportRepository.Delete(report);
+                }
+                await _reportRepository.SaveChangesAsync();
+            }
 
             _postRepository.Delete(post);
         }
+        await _postRepository.SaveChangesAsync();
 
         _topicRepository.Delete(topic);
         await _topicRepository.SaveChangesAsync();
 
         return RedirectToAction("Index", "Topics", new { categoryId = topic.CategoryId });
     }
-
-
+    
     [HttpPost]
     public async Task<IActionResult> AddTagToTopic(TopicTagViewModel model)
     {
@@ -266,11 +287,21 @@ public class TopicsController : Controller
         }
 
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        
+        var existingRating = await _ratingRepository.GetRatingByTopicAndUserAsync(topicId, userId);
+    
+        if (existingRating != null)
+        {
+            existingRating.Score = rating.Score;
+            _ratingRepository.Update(existingRating);
+        }
+        else
+        {
+            var newRating = new Rating { TopicId = topicId, Score = rating.Score, UserId = userId };
+            _ratingRepository.Add(newRating);
+        }
 
-        var result = new Rating { TopicId = topicId, Score = rating.Score, UserId = userId };
-        _ratingRepository.Add(result);
         await _ratingRepository.SaveChangesAsync();
-
         return RedirectToAction("Index", "Topics", new { categoryId = topic.CategoryId });
     }
 

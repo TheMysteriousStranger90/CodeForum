@@ -1,13 +1,99 @@
 ﻿@model IEnumerable<LikeDislike>
 
-<h2>Your Likes and Dislikes</h2>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="login-card fade-in">
+                <div class="card-header text-center">
+                    <div class="reaction-icon">
+                        <i class="fas fa-thumbs-up fa-2x me-2"></i>
+                        <i class="fas fa-thumbs-down fa-2x"></i>
+                    </div>
+                    <h3 class="login-title">Your Reactions</h3>
+                    <div class="reaction-stats">
+                        <span class="badge bg-success me-2">
+                            <i class="fas fa-thumbs-up"></i>
+                            @Model.Count(x => x.IsLike)
+                        </span>
+                        <span class="badge bg-danger">
+                            <i class="fas fa-thumbs-down"></i>
+                            @Model.Count(x => !x.IsLike)
+                        </span>
+                    </div>
+                </div>
 
-<ul>
-    @foreach (var likeDislike in Model)
-    {
-        <li>
-            Post Content: @likeDislike.Post.Content, 
-            Liked: @(likeDislike.IsLike ? "Yes" : "No")
-        </li>
-    }
-</ul>
+                <div class="card-body">
+                    <div class="reactions-list">
+                        @foreach (var likeDislike in Model)
+                        {
+                            <div class="reaction-item @(likeDislike.IsLike ? "like" : "dislike")">
+                                <div class="d-flex align-items-start">
+                                    <div class="reaction-icon-small me-3">
+                                        <i class="fas @(likeDislike.IsLike ? "fa-thumbs-up text-success" : "fa-thumbs-down text-danger")"></i>
+                                    </div>
+                                    <div class="reaction-content">
+                                        <div class="post-preview">
+                                            @likeDislike.Post.Content
+                                        </div>
+                                    </div>
+                                    <div class="ms-auto">
+                                        <a asp-controller="Posts"
+                                           asp-action="Index"
+                                           asp-route-id="@likeDislike.Post.TopicId"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-external-link-alt"></i>
+                                            View Post
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.reaction-icon {
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.reaction-item {
+    padding: 1rem;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.reaction-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.reaction-item.like {
+    border-left: 4px solid var(--success);
+}
+
+.reaction-item.dislike {
+    border-left: 4px solid var(--danger);
+}
+
+.post-preview {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--dark);
+}
+
+.reaction-icon-small {
+    font-size: 1.5rem;
+    width: 40px;
+    text-align: center;
+}
+</style>

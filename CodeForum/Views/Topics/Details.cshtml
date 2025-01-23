@@ -1,12 +1,29 @@
-﻿@model Topic
+﻿@model CodeForum.Models.ViewModels.TopicDetailsViewModel
 
-<div>
-    <h4>Title: @Model.Title</h4>
-    <p>Image: @Model.ImageFile</p>
-    <p>Content: @Model.Content</p>
-    <p>CreatedAt: @Model.CreatedAt</p>
-    <p>LastName: @Model.User.LastName</p>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="topic-card">
+                <div class="topic-header">
+                    <h1>@Model.Topic.Title</h1>
+                    <div class="topic-meta">
+                        <span>Posted by @Model.Topic.User.UserName</span>
+                        <span>in @Model.Topic.Category.Name</span>
+                        <span>on @Model.Topic.CreatedAt.ToString("MMM dd, yyyy")</span>
+                    </div>
+                </div>
+                
+                <div class="topic-content">
+                    @Model.Topic.Content
+                </div>
+                
+                <div class="topic-tags">
+                    @foreach (var topicTag in Model.Topic.TopicTags)
+                    {
+                        <span class="badge bg-secondary">@topicTag.Tag.Name</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<p>
-    <a asp-action="Index">Back to List</a>
-</p>

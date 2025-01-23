@@ -185,8 +185,24 @@ public class PostsController : Controller
 
         if (post != null)
         {
+            var reports = await _reportRepository.GetReportsByPostIdAsync(id);
+            foreach (var report in reports)
+            {
+                _reportRepository.Delete(report);
+            }
+
+            await _reportRepository.SaveChangesAsync();
+
+            var likesDislikes = await _likeDislikeRepository.GetLikesDislikesByPostIdAsync(id);
+            foreach (var likeDislike in likesDislikes)
+            {
+                _likeDislikeRepository.Delete(likeDislike);
+            }
+
+            await _likeDislikeRepository.SaveChangesAsync();
+
             _postRepository.Delete(post);
-            await _topicRepository.SaveChangesAsync();
+            await _postRepository.SaveChangesAsync();
         }
 
         return RedirectToAction("Index", "Posts", new { id = post.TopicId });

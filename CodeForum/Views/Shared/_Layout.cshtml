@@ -8,66 +8,88 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/CodeForum.styles.css" asp-append-version="true"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.css">
 </head>
 <body>
 <header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <nav class="navbar navbar-expand-sm navbar-light bg-gradient shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                <img src="~/images/logo/logo.png" alt="Logo" width="90" height="45">
+            <a class="navbar-brand hover-effect" asp-area="" asp-controller="Home" asp-action="Index">
+                <img src="~/images/logo/logo.png" alt="Logo" width="90" height="45" class="d-inline-block align-text-top">
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
+            <div class="navbar-collapse collapse">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        <a class="nav-link nav-btn" asp-controller="Home" asp-action="Index">
+                            <i class="fas fa-home"></i> Home
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        <a class="nav-link nav-btn" asp-controller="Home" asp-action="Privacy">
+                            <i class="fas fa-shield-alt"></i> Privacy
+                        </a>
                     </li>
                 </ul>
 
-
-                <div class="flex2 text-end d-none d-md-block">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="nav-right">
+                    <ul class="navbar-nav">
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Favorites" asp-action="Index">Favorites</a>
+                                <a class="nav-link nav-btn" asp-controller="Favorites" asp-action="Index">
+                                    <i class="fas fa-star"></i> Favorites
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="LikeDislike" asp-action="Index">Like And Dislike</a>
+                                <a class="nav-link nav-btn" asp-controller="LikeDislike" asp-action="Index">
+                                    <i class="fas fa-thumbs-up"></i> Reactions
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Notification" asp-action="Index">Notification</a>
+                                <a class="nav-link nav-btn" asp-controller="Notification" asp-action="Index">
+                                    <i class="fas fa-bell"></i> Notifications
+                                </a>
                             </li>
                             @if (User.IsInRole("Administrator"))
                             {
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle text-dark" href="#" id="adminDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Admin Panel
+                                    <a class="nav-link dropdown-toggle nav-btn" href="#" id="adminDropdown" data-toggle="dropdown">
+                                        <i class="fas fa-user-shield"></i> Admin Panel
                                     </a>
-                                    <div class="dropdown-menu" aria-labelledby="adminDropdown">
-                                        <a class="dropdown-item" asp-area="" asp-controller="Roles" asp-action="Index">Roles</a>
-                                        <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
-                                        <a class="dropdown-item" asp-area="" asp-controller="Reports" asp-action="Index">Reports</a>
+                                    <div class="dropdown-menu animate slideIn">
+                                        <a class="dropdown-item" asp-controller="Roles" asp-action="Index">
+                                            <i class="fas fa-users-cog"></i> Roles
+                                        </a>
+                                        <a class="dropdown-item" asp-controller="Users" asp-action="Index">
+                                            <i class="fas fa-user-friends"></i> Users
+                                        </a>
+                                        <a class="dropdown-item" asp-controller="Reports" asp-action="Index">
+                                            <i class="fas fa-flag"></i> Reports
+                                        </a>
                                     </div>
                                 </li>
                             }
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Account" asp-action="Logout">Logout</a>
+                                <a class="nav-link nav-btn-logout" asp-controller="Account" asp-action="Logout">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Account" asp-action="Login">Sign In</a>
+                                <a class="nav-link nav-btn-login" asp-controller="Account" asp-action="Login">
+                                    <i class="fas fa-sign-in-alt"></i> Sign In
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Account" asp-action="Register">Sign Up</a>
+                                <a class="nav-link nav-btn-register" asp-controller="Account" asp-action="Register">
+                                    <i class="fas fa-user-plus"></i> Sign Up
+                                </a>
                             </li>
                         }
                     </ul>
@@ -85,8 +107,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>

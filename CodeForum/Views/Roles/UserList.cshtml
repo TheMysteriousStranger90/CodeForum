@@ -1,18 +1,116 @@
 ﻿@model IEnumerable<ApplicationUser>
 
-<h2>List</h2>
-<div class="col-md-6 offset-md-3">
-    <div class="card card-body bg-light">
-    <table class="table">
-        @foreach (var user in Model)
-        {
-            <tr>
-                <td>@user.Email</td>
-                <td>
-                    <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-userid="@user.Id">Access rights</a>
-                </td>
-            </tr>
-        }
-    </table>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="login-card fade-in">
+                <div class="card-header text-center">
+                    <div class="users-icon">
+                        <i class="fas fa-users fa-3x mb-3"></i>
+                    </div>
+                    <h3 class="login-title">User Management</h3>
+                    <p class="text-muted">Manage user access and permissions</p>
+                </div>
+
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model)
+                                {
+                                    <tr>
+                                        <td class="align-middle">
+                                            <div class="d-flex align-items-center">
+                                                <div class="user-avatar me-3">
+                                                    <i class="fas fa-user-circle fa-2x"></i>
+                                                </div>
+                                                <div class="user-info">
+                                                    <div>@user.Email</div>
+                                                    <small class="text-muted">
+                                                        ID: @user.Id.Substring(0, 8)...
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-end">
+                                            <a class="btn btn-outline-primary btn-sm" 
+                                               asp-action="Edit" 
+                                               asp-route-userid="@user.Id">
+                                                <i class="fas fa-user-shield"></i>
+                                                Manage Roles
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="text-end mt-3">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Roles
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<style>
+    .users-icon {
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+    }
+
+    .user-avatar {
+        color: var(--secondary);
+        width: 40px;
+        text-align: center;
+    }
+
+    .user-info {
+        line-height: 1.2;
+        color: var(--dark);
+    }
+
+    .table td {
+        padding: 1rem;
+        color: var(--dark);
+    }
+
+    .table th {
+        color: var(--primary);
+        font-weight: 600;
+        font-size: 1.1rem;
+        padding: 1rem;
+    }
+
+    .login-title {
+        color: var(--primary);
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0,0,0,0.03);
+    }
+
+    .btn-outline-primary {
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .btn-outline-primary:hover {
+        background-color: var(--primary);
+        color: white;
+    }
+</style>

@@ -23,4 +23,20 @@ public class NotificationController : Controller
 
         return View(notifications);
     }
+    
+    [HttpPost]
+    public async Task<IActionResult> MarkAsRead(int id)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var notification = await _notificationRepository.GetByIdAsync(id);
+        
+        if (notification == null || notification.UserId != userId)
+            return NotFound();
+
+        notification.IsRead = true;
+        _notificationRepository.Update(notification);
+        await _notificationRepository.SaveChangesAsync();
+
+        return Json(new { success = true });
+    }
 }

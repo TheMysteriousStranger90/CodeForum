@@ -1,14 +1,108 @@
 ﻿@model IEnumerable<Notification>
 
-<h2>Your Notifications</h2>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="login-card fade-in">
+                <div class="card-header text-center">
+                    <div class="notifications-icon">
+                        <i class="fas fa-bell fa-3x mb-3"></i>
+                    </div>
+                    <h3 class="login-title">Your Notifications</h3>
+                    <p class="text-muted">
+                        <span class="badge bg-primary">
+                            @Model.Count(n => !n.IsRead) Unread
+                        </span>
+                    </p>
+                </div>
 
-<ul>
-    @foreach (var notification in Model)
-    {
-        <li>
-            <p>@notification.Content</p>
-            <p>@notification.CreatedAt.ToString("g")</p>
-            <p>Read: @(notification.IsRead ? "Yes" : "No")</p>
-        </li>
-    }
-</ul>
+                <div class="card-body">
+                    @if (!Model.Any())
+                    {
+                        <div class="text-center text-muted">
+                            <i class="fas fa-bell-slash fa-4x mb-3"></i>
+                            <p>No notifications yet</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="notifications-list">
+                            @foreach (var notification in Model)
+                            {
+                                <div class="notification-item @(!notification.IsRead ? "unread" : "")" 
+                                     id="notification-@notification.Id">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="notification-content">
+                                            <p class="mb-1">@notification.Content</p>
+                                            <small class="text-muted">
+                                                <i class="fas fa-clock me-1"></i>
+                                                @notification.CreatedAt.ToString("MMM dd, yyyy HH:mm")
+                                            </small>
+                                        </div>
+                                        @if (!notification.IsRead)
+                                        {
+                                            <button class="btn btn-sm btn-outline-primary mark-read-btn"
+                                                    onclick="markAsRead(@notification.Id)">
+                                                <i class="fas fa-check"></i> Mark as Read
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.notifications-icon {
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+}
+
+.notification-item {
+    padding: 1rem;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.notification-item.unread {
+    background-color: rgba(var(--bs-primary-rgb), 0.05);
+    border-left: 4px solid var(--primary);
+}
+
+.notification-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+</style>
+
+@section Scripts {
+    <script>
+        function markAsRead(id) {
+            fetch(`/Notification/MarkAsRead/${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const notification = document.getElementById(`notification-${id}`);
+                    notification.classList.remove('unread');
+                    notification.querySelector('.mark-read-btn').remove();
+                    
+                    const badge = document.querySelector('.badge');
+                    const count = parseInt(badge.textContent);
+                    badge.textContent = `${count - 1} Unread`;
+                }
+            });
+        }
+    </script>
+}

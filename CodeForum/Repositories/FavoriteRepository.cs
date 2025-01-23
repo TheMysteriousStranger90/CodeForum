@@ -10,6 +10,13 @@ public class FavoriteRepository : GenericRepository<Favorite>, IFavoriteReposito
     public FavoriteRepository(ApplicationDbContext context) : base(context)
     {
     }
+    
+    public async Task<Favorite> GetByIdAsyncWithTopic(int id)
+    {
+        return await _context.Favorites
+            .Include(f => f.Topic)
+            .FirstOrDefaultAsync(f => f.Id == id);
+    }
 
     public async Task<IEnumerable<Favorite>> GetFavoritesByUserIdAsync(string userId)
     {

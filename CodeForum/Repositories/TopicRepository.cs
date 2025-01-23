@@ -14,6 +14,10 @@ public class TopicRepository : GenericRepository<Topic>, ITopicRepository
     public async Task<Topic> GetByIdAsync(int id)
     {
         return await _context.Topics
+            .Include(t => t.User)
+            .Include(t => t.Category)
+            .Include(t => t.Posts)
+            .ThenInclude(p => p.User)
             .Include(t => t.TopicTags)
             .ThenInclude(tt => tt.Tag)
             .FirstOrDefaultAsync(t => t.Id == id);
