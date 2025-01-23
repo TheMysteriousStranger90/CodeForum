@@ -277,11 +277,21 @@ public class TopicsController : Controller
         }
 
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        
+        var existingRating = await _ratingRepository.GetRatingByTopicAndUserAsync(topicId, userId);
+    
+        if (existingRating != null)
+        {
+            existingRating.Score = rating.Score;
+            _ratingRepository.Update(existingRating);
+        }
+        else
+        {
+            var newRating = new Rating { TopicId = topicId, Score = rating.Score, UserId = userId };
+            _ratingRepository.Add(newRating);
+        }
 
-        var result = new Rating { TopicId = topicId, Score = rating.Score, UserId = userId };
-        _ratingRepository.Add(result);
         await _ratingRepository.SaveChangesAsync();
-
         return RedirectToAction("Index", "Topics", new { categoryId = topic.CategoryId });
     }
 

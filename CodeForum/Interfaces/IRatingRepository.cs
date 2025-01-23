@@ -6,4 +6,5 @@ public interface IRatingRepository : IGenericRepository<Rating>
 {
     Task AddRatingToTopicAsync(int topicId, Rating rating);
     Task<double?> GetAverageRatingByTopicIdAsync(int topicId);
+    Task<Rating> GetRatingByTopicAndUserAsync(int topicId, string userId);
 }
