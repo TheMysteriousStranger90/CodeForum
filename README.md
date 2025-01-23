@@ -46,3 +46,9 @@ Bohdan Harabadzhyu
 
 [MIT](https://choosealicense.com/licenses/mit/)
 
+## YouTube Review
+<details>
+<summary>📺 Watch Video Review</summary>
+
+[![YouTube](http://i.ytimg.com/vi/Jh7P7vjbUlM/hqdefault.jpg)](https://www.youtube.com/watch?v=Jh7P7vjbUlM)
+</details>
