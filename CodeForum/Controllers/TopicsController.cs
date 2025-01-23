@@ -228,29 +228,39 @@ public class TopicsController : Controller
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var topic = await _topicRepository.GetByIdAsync(id);
+    
         if (topic == null)
         {
-            throw new ArgumentException("Topic with the given id does not exist");
+            return NotFound("Topic not found");
         }
 
         var posts = await _postRepository.GetPostsByTopicIdAsync(topic.Id);
-
+    
         foreach (var post in posts)
         {
-            var reports = await _reportRepository.GetReportByPostIdAndUserId(post.Id, userId);
-
-            _reportRepository.Delete(reports);
+            // Get all reports for this post
+            var reports = await _reportRepository.GetReportsByPostIdAsync(post.Id);
+        
+            // Delete all reports for this post
+            if (reports != null && reports.Any())
+            {
+                foreach (var report in reports)
+                {
+                    _reportRepository.Delete(report);
+                }
+                await _reportRepository.SaveChangesAsync();
+            }
 
             _postRepository.Delete(post);
         }
+        await _postRepository.SaveChangesAsync();
 
         _topicRepository.Delete(topic);
         await _topicRepository.SaveChangesAsync();
 
         return RedirectToAction("Index", "Topics", new { categoryId = topic.CategoryId });
     }
-
-
+    
     [HttpPost]
     public async Task<IActionResult> AddTagToTopic(TopicTagViewModel model)
     {

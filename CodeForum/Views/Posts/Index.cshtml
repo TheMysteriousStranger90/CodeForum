@@ -16,7 +16,15 @@
             </div>
 
             <div class="topic-header fade-in">
-                <img src="@topic.Image" alt="Topic image" class="topic-image"/>
+                @{
+                var imagePath = string.IsNullOrEmpty(topic.Image) ?
+                Url.Content("~/images/basic-image.jpg") :
+                topic.Image;
+                }
+                <img src="@imagePath"
+                     alt="Topic image"
+                     onerror="this.src='@Url.Content("~/images/basic-image.jpg")'"
+                     class="topic-image"/>
                 <div class="topic-content">
                     <h2 class="topic-title">@topic.Title</h2>
                     <p class="topic-text">@topic.Content</p>
